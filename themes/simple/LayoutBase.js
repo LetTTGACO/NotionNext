@@ -62,7 +62,7 @@ const LayoutBase = props => {
                 <JumpToTopButton />
             </div>
 
-            <Footer {...props} />
+          <Footer title={props?.title || BLOG.TITLE} />
 
         </div>
   )
