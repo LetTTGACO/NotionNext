@@ -1,0 +1,494 @@
+{
+  "docs": [
+    {
+      "id": "4296105d-56f7-4dc7-be6a-ac69ba786d50",
+      "doc_id": "4296105d-56f7-4dc7-be6a-ac69ba786d50",
+      "title": "4296105d-56f7-4dc7-be6a-ac69ba786d50",
+      "updated": 1688994900000,
+      "body_original": "\n# Why Notion ?\n\n\n这是我第三次进行博客的迁移了！\n\n\n原本的博客是基于[语雀](https://www.yuque.com/) 云端书写 + 语雀 webhook + 自建Node API服务 + [yuqe-hexo-with-cdn](https://github.com/LetTTGACO/yuque-hexo-with-cdn) + [Hexo](https://hexo.io/) + Github Actions 持续集成部署到腾讯云COS静态网站上。\n\n\n现在是基于 [Notion](https://www.notion.so/zh-cn) + [NotionNext](https://tangly1024.com/article/notion-next) 持续集成部署到 [Vercel](https://vercel.com/) 上。\n\n\n本人接触Notion有一段时间了，但是一直没怎么用起来，原因有三\n\n- 当时以为没有中文\n- 语雀的写作舒适感要更好一点\n- 还没感受到Notion的强大\n\n在用了2年时间语雀之后，语雀的产品策略越来越离谱，各种收费割韭菜。再加上之前一段时间开发 Elog 对接语雀和 Notion 的 Api 时，发现 Notion 原来这么好用。\n\n- Notion 的 Properties 天然对Api很友好。再也不用在语雀的文章头部手动添加 Front-Matter。\n- Notion 的筛选和排序对于统一分类管理文章很方便\n- Notion AI 永远的神。ChatGPT 火起来之后，对于 Notion 这种写作工具来说简直是锦上添花。用来帮忙写总结，写技术方便，修正文章格式等等。虽然现在还是有很多能力没有深度绑定，但是已经足够好用了！坐等官方更新！\n- 找到中文插件了，其实用习惯之后，是不是中文也没那么重要了。不过一个有中文的话会让小白用户更快的爱上 Notion\n\n# Why NotionNext ?\n\n\n其实一开始是准备用我自己的 [Elog](https://elog.1874.cool/) 工具来将 Notion 文档同步到博客平台。在无意间发现了 [NotionNext](https://tangly1024.com/article/notion-next) ，部署简单，对于 Notion 的格式支持度非常高，所以我才选择了它。\n\n\n不得不说，NotionNext 对于我的 Elog 在 Notion 的发展是一个不小的打击，Elog 完全没有优势。不过这也让我看到了我的 Elog 的未来的发展方向。\n\n\n通过深入 NotionNext 的研究，发现大家都逃不过缝合怪。Notion社区生态的强大完全可以造就一个又一个的 类 NotionNext，所以我也相信我的 Elog 在不久后也能成为一个优秀的博客同步工具。\n\n\n正如我的 Elog 介绍\n\n\n> Elog: 开放式跨平台博客解决方案，随意组合写作平台(语雀/Notion)和部署平台(Hexo/Vitepress/HuGo/Confluence)等\n\n\nElog 生态将是我未来的强大优势！\n\n\n# 迁移中遇到的的问题\n\n\n## Notion 对于 markdown 的导入还没有很完美\n\n\n其实已经很好了，就是有几个小问题\n\n1. Notion 没能完全区分行内代码块和代码块\n\n有时候会把行内代码块识别为代码块，造成不必要的换行和格式错乱。我导入的60多篇文档，一大半都有这个问题，好在有 Notion Ai 的帮助，才让我不那么痛苦的手动调整格式。\n\n1. Notion 对于代码块的语言识别不够完善\n\n对于常见的 `TypeScript` 和 `JavaScript` 没能完全识别出来，导致代码的格式化出现问题，代码少了换行，全部堆积在一起。而且 Notion Ai  处理它的速度也比较慢，不如我手动按照原文档复制粘贴来得快。\n\n\n而且处理之后的文档在同步到别的工作区也会丢失一部份的代码块的语言识别和格式化，这让我有点头痛，好在只是一次性的工作量……\n\n\n## NotionNext 虽强大但也还有小瑕疵\n\n1. NotionNext 不支持 `Internal integration token`\n\nNotionNext 是基于公开分享的页面来实时获取 Notion Database 中的数据，这意味着你的 Notion 数据源被完全公开了，用户有可能通过 `Page Id`找到你的博客源数据，而一些你不想被分享的文章或者数据就暴露了。\n\n\n虽然官方给出的方案是 可以使用 cookie 中的 `auth_token`，但是它是有有效期的。而且经过我的实测，`auth_token`存在并发问题：NotionNext 会在短时间内请求很多次API。在我60来篇文档的部署过程中就出现了请求次数过多的错误，所以我暂时还是用的公开的页面来部署。\n\n\n不过话说回来，既然部署到博客都能公开，那这个数据库里面的文档其实被看到也无所谓啦～\n\n\n话虽如此，我还是寻求过解决方案，因为我的 Elog 就是基于 `Notion Internal integration token` 来部署的（所以 Elog 的功能很有限）。我尝试过改动 Notion Next 中的相关API 来支持它，结果得到的答案是，NotionNext 所使用的 [react-notion-x](https://github.com/NotionX/react-notion-x) 库不是基于官方API来开发的。\n\n\n正如 [react-notion-x](https://github.com/NotionX/react-notion-x) 中 [Why use notion-client over @notionhq/client? ](https://github.com/NotionX/react-notion-x/issues/457)所描述的那样\n\n\n> `notion-client`在官方客户端发布之前就出现了，官方客户端不支持所有块类型并且由于某种原因效率极低。更多细节在[这里](https://github.com/NotionX/react-notion-x/tree/master/packages/notion-compat)\n\n\n`Notion Internal integration token` 是官方 API 所提供的令牌，而官方 API [@notionhq/client](https://github.com/makenotion/notion-sdk-js) 无法支持所有现有的 Notion 功能模块，所以需要等官方 API 完善了才能使用它。\n\n1. NotionNext 不是很稳定\n\nNotionNext 部署的博客，浏览器控制台会出现很多报错。大部分都是使用 React/NextJs 不标准导致的，当然它也存在性能问题，我能感觉到他调用了很多不必要的 API 。好在有缓存，导致线上问题不那么明显。\n\n\n还有一些 UI、路由、网站配置等小问题需要作者去解决，不过当下最好的办法当然是自己修复它。我已经修复了一些看起来比较明显的问题，还有一些需要接下来一小段时间去解决它。当然，如果能参与 NotionNext 的开发的话会更好。\n\n",
+      "properties": {
+        "password": "",
+        "icon": "",
+        "创建时间": "2023-04-09T18:39:00.000Z",
+        "date": "2023-04-10",
+        "type": "Post",
+        "slug": "migrate-blog-to-notion",
+        "配置类型": {
+          "type": "string",
+          "string": "文档"
+        },
+        "summary": "博客迁移记录",
+        "更新时间": "2023-07-10T13:15:00.000Z",
+        "title": "迁移博客到 Notion",
+        "category": "技术分享",
+        "tags": [
+          "Notion"
+        ],
+        "status": "Published",
+        "urlname": "4296105d-56f7-4dc7-be6a-ac69ba786d50",
+        "updated": "2023-07-10 21:15:00"
+      },
+      "body": "",
+      "realName": "迁移博客到 Notion",
+      "relativePath": "/迁移博客到 Notion.md"
+    },
+    {
+      "id": "385c919d-f253-4976-9819-824ea05304e4",
+      "doc_id": "385c919d-f253-4976-9819-824ea05304e4",
+      "title": "385c919d-f253-4976-9819-824ea05304e4",
+      "updated": 1693684860000,
+      "body_original": "\n# 适用场景\n\n\n当开发一个组件包时，由于平台的差异，所以在某些实现上需要实现两套。\n\n\n例如，`multi-input`是一个可以同时用于微信小程序和浏览器环境的`npm`库，其中的`request`请求库在不同客户端的实现不一样。在微信环境下用的是`wx.request`，在浏览器环境用的是`fetch`。\n\n\n但是在微信环境使用时，我不希望我引入的代码中包含用不到的适用于浏览器环境的`fetch`等相关代码。再加上微信小程序对于代码体积的严格限制。所以我希望`multi-input`再引入的时候可以有多个入口，主逻辑代码直接引入`multi-input`，`request`库相关逻辑单独有个入口。\n\n\n解决办法有两种\n\n1. 将`request`库相关逻辑抽离成另外一个`npm`包\n2. `rollup`打包多入口文件并配合`package.json`中的`exports`字段实现\n\n本文介绍第二种方法，使用示例如下：\n\n\n```javascript\nimport { TestCore } from 'multi-input'\nimport { WebRequest } from 'multi-input/adapter/web-request'\nimport { WxRequest } from 'multi-input/adapter/web-request'\n```\n\n\n这样在微信小程序端使用并打包时，就不会将`WebRequest`相关代码打包到微信小程序代码中，实现按需引入。\n\n\n# 代码结构\n\n\n｜ 代码源码：[multi-input](https://github.com/LetTTGACO/build-project/tree/master/rollup/multi-input)\n\n\n`multi-input`库代码结构如下\n\n\n```text\n.\n|-multi-input\n  |-.gitignore\n  |-adapter // 这里面就是不同客户端的request请求库的实现\n  |  |-web-request.ts\n  |  |-wx-request.ts\n  |-src\n  |  |-core.ts\n  |  |-index.ts\n  |  |-manager\n  |  |  |-message-manager.ts\n  |  |-utils\n  |  |  |-url.ts\n  |-rollup.config.js // rollup打包配置\n  |-tsconfig.json\n  |-package.json\n```\n\n\n# 注意事项\n\n\n要想要外部以这样的方式引用，有五个必要条件\n\n1. `adapter`下的文件只能引用`adapter`目录中的文件\n2. `src`下中的文件只能引用`src`中的文件\n3. `multi-input`根目录下必须存在`adapter/web-request`文件\n4. `package.json`中的`exports`字段中需要有`adapter/web-request`的路径映射\n5. `rollup`需要分别打包`src`和`adapter`下的文件，多入口打包\n\n# Rollup配置\n\n\n功能点如下\n\n- 将`multi-input`以`esm`和`cjs`的模式导出，并分别导出到`dist/esm`和`dist/cjs`下\n- `adapter`下的请求库也分别以`esm`和`cjs`的模式导出，并分别导出到`dist/esm/adapter`和`dist/cjs/adapter`下\n- 打包后的类型声明文件和`js`文件和原文件目录结构保持一致\n\n```typescript\n// rollup.config.js\nimport resolve from \"@rollup/plugin-node-resolve\";\nimport commonjs from \"@rollup/plugin-commonjs\"; // 解析js\nimport typescript from \"@rollup/plugin-typescript\"; // 解析ts\n\nconst getBasePlugins = (tsConfig) => {\n  return [\n    resolve(),\n    commonjs(),\n    typescript({\n      ...tsConfig,\n    }),\n  ];\n};\n\nexport default [\n  // 主逻辑代码打包\n  {\n    input: \"src/index.ts\",\n    output: {\n      dir: \"dist/cjs\", // 打包到cjs目录\n      format: \"cjs\", // 以cjs模式打包\n      exports: \"named\", // 指定导出模式（自动、默认、命名、无）\n      preserveModules: true, // 保留模块结构，以原来的文件夹结构输出js\n      preserveModulesRoot: \"src\", // 将保留的模块放在根级别的此路径下\n    },\n    plugins: [\n      ...getBasePlugins({\n        outDir: \"dist/cjs\", // 声明文件输出目录\n        declaration: true,\n        // 指定声明文件的解析目录，这里主要是用于忽略adapter目录\n        filterRoot: \"src\",\n      }),\n    ],\n  },\n  {\n    input: \"src/index.ts\",\n    output: {\n      dir: \"dist/esm\",\n      format: \"esm\",\n      exports: \"named\",\n      preserveModules: true,\n      preserveModulesRoot: \"src\",\n    },\n    plugins: [\n      ...getBasePlugins({\n        outDir: \"dist/esm\",\n        declaration: true,\n        filterRoot: \"src\",\n      }),\n    ],\n  },\n  // adapter导出\n  {\n    input: {\n      \"web-request\": \"adapter/web-request.ts\",\n      \"wx-request\": \"adapter/wx-request.ts\",\n    },\n    output: [\n      {\n        dir: \"dist/cjs/adapter\",\n        format: \"cjs\",\n      },\n    ],\n    plugins: [\n      ...getBasePlugins({\n        outDir: \"dist/cjs/adapter\",\n        declaration: true,\n        // 指定声明文件的解析目录，这里主要是用于忽略src目录\n        // 注意tsconfig.json中不要指定rootDir，否则会导致adapter目录识别不到\n        filterRoot: \"adapter\",\n      }),\n    ],\n  },\n  {\n    input: {\n      \"web-request\": \"adapter/web-request.ts\",\n      \"wx-request\": \"adapter/wx-request.ts\",\n    },\n    output: [\n      {\n        dir: \"dist/esm/adapter\",\n        format: \"esm\",\n      },\n    ],\n    plugins: [\n      ...getBasePlugins({\n        outDir: \"dist/esm/adapter\",\n        declaration: true,\n        filterRoot: \"adapter\",\n      }),\n    ],\n  },\n];\n```\n\n\n# package.json配置\n\n\n```typescript\n// package.json\n{\n  \"name\": \"multi-input\",\n  \"version\": \"1.0.0\",\n  \"description\": \"多入口打包\",\n  \"main\": \"dist/cjs/index.js\",\n  \"module\": \"dist/esm/index.js\",\n  \"typings\": \"dist/esm/index.d.ts\",\n  \"scripts\": {\n    \"build\": \"rollup -c rollup.config.js --bundleConfigAsCjs\",\n    \"clean\": \"rimraf -rf ./dist\"\n  },\n  \"exports\": {\n    // 定义multi-input路径引用文件\n    \".\": {\n      \"import\": \"./dist/esm/index.js\", // esm import时引用时的文件路径\n      \"require\": \"./dist/cjs/index.js\", // cjs require时引用时的文件路径\n      \"types\": \"./dist/esm/index.d.ts\" // 类型声明文件路径\n    },\n    // 定义multi-input/adapter/web-request路径引用文件\n    \"./adapter/web-request\": {\n      \"import\": \"./dist/esm/adapter/web-request.js\", // esm import时引用时的文件路径\n      \"require\": \"./dist/cjs/adapter/web-request.cjs\", // cjs require时引用时的文件路径\n      \"types\": \"./dist/esm/adapter/web-request.d.ts\" // 类型声明文件路径\n    },\n    // 定义multi-input/adapter/wx-request路径引用文件\n    \"./adapter/wx-request\": {\n      \"import\": \"./dist/esm/adapter/wx-request.js\", // esm import时引用时的文件路径\n      \"require\": \"./dist/cjs/adapter/wx-request.cjs\", // cjs require时引用时的文件路径\n      \"types\": \"./dist/esm/adapter/wx-request.d.ts\" // 类型声明文件路径\n    }\n  },\n  \"files\": [\"dist\"],\n  \"author\": \"1874\",\n  \"license\": \"ISC\",\n  \"devDependencies\": {\n    \"@rollup/plugin-commonjs\": \"^25.0.4\",\n    \"@rollup/plugin-node-resolve\": \"^15.2.1\",\n    \"@rollup/plugin-typescript\": \"^11.1.3\",\n    \"rimraf\": \"^5.0.1\",\n    \"rollup\": \"^3.28.1\",\n    \"tslib\": \"^2.6.2\",\n    \"typescript\": \"^5.2.2\"\n  }\n}\n```\n\n\n# 打包后代码结构\n\n\n```typescript\n.\n|-multi-input\n  |-.gitignore\n  |-adapter\n  |  |-web-request.ts\n  |  |-wx-request.ts\n  |-dist // 打包产物\n  |  |-cjs\n  |  |  |-adapter\n  |  |  |  |-web-request.d.ts\n  |  |  |  |-web-request.js\n  |  |  |  |-wx-request.d.ts\n  |  |  |  |-wx-request.js\n  |  |  |-core.d.ts\n  |  |  |-core.js\n  |  |  |-index.d.ts\n  |  |  |-index.js\n  |  |  |-manager\n  |  |  |  |-message.d.ts\n  |  |  |  |-message.js\n  |  |  |-utils\n  |  |  |  |-url.d.ts\n  |  |  |  |-url.js\n  |  |-esm\n  |  |  |-adapter\n  |  |  |  |-web-request.d.ts\n  |  |  |  |-web-request.js\n  |  |  |  |-wx-request.d.ts\n  |  |  |  |-wx-request.js\n  |  |  |-core.d.ts\n  |  |  |-core.js\n  |  |  |-index.d.ts\n  |  |  |-index.js\n  |  |  |-manager\n  |  |  |  |-message.d.ts\n  |  |  |  |-message.js\n  |  |  |-utils\n  |  |  |  |-url.d.ts\n  |  |  |  |-url.js\n  |-src\n  |  |-core.ts\n  |  |-index.ts\n  |  |-manager\n  |  |  |-message.ts\n  |  |-utils\n  |  |  |-url.ts\n  |-rollup.config.js\n  |-tsconfig.json\n  |-package.json\n  |-pnpm-lock.yaml\n```\n\n\n# 参考资料\n\n- [Rollup中文文档](https://cn.rollupjs.org/introduction/)\n- [rollup/plugin-typescript插件配置](https://www.npmjs.com/package/@rollup/plugin-typescript)\n",
+      "properties": {
+        "password": "",
+        "icon": "",
+        "创建时间": "2023-09-02T17:33:00.000Z",
+        "date": "2023-09-03",
+        "type": "Post",
+        "slug": "rollup-multi-input",
+        "配置类型": {
+          "type": "string",
+          "string": "文档"
+        },
+        "summary": "用Rollup打包多入口npm库，实现文件按需引入",
+        "更新时间": "2023-09-02T20:01:00.000Z",
+        "title": "Rollup打包——多入口配置",
+        "category": "技术分享",
+        "tags": [],
+        "status": "Published",
+        "urlname": "385c919d-f253-4976-9819-824ea05304e4",
+        "updated": "2023-09-03 04:01:00"
+      },
+      "body": "",
+      "realName": "Rollup打包——多入口配置",
+      "relativePath": "/Rollup打包——多入口配置.md"
+    },
+    {
+      "id": "d7b1453e-530d-4614-8d41-c5ac6972e351",
+      "doc_id": "d7b1453e-530d-4614-8d41-c5ac6972e351",
+      "title": "d7b1453e-530d-4614-8d41-c5ac6972e351",
+      "updated": 1685550180000,
+      "body_original": "\n# 引言\n\n\n在之前的文章[语雀云端写作 Hexo+Github Actions+COS 持续集成](https://1874.cool/roeayv) 中，语雀`webhook`触发构建的流程如下：\n\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/FmBBicekAEyyKQlzZSWZxgWjZ0Qn.jpeg)\n\n\n而当时腾讯云函数对个人使用还是在一定条件下免费的，本着能白嫖就白嫖的心态就用它做中转服务调用了。结果从上个月开始，腾讯云函数涨价了，而且费用也不便宜，我看了下账单，一个月差不多要快 10 块钱了，这我可忍不了。 所以就打算自己搭建一个`node`服务，自己调用`Github Actions`的`API`触发构建。流程如下：\n\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/FiOZZFrZK2WNImXPudM_Eggi4hCJ.jpeg)\n\n\n# 部署流程\n\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/FpafgH_mmn7S7Xdf2eI_tZuZUpco.jpeg)\n\n\n# 搭建 Node 服务\n\n\n搭建记录请看[Midway 项目搭建](https://1874.cool/zbbxv0)\n\n\n# 开通腾讯云容器镜像服务（可选）\n\n\n目前腾讯云容器镜像服务对个人还是免费的，我就先用这个，不免费了再说。也可以直接推送到`Docker Hub`\n\n\n> 实操过程中发现：由于 Github Actions 使用的机器都是美国的，所以选择在香港/海外新建会快很多很多！\n\n\n\t![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/Fi5ZyPntP28VPpJP66tQDzSirGxn.png)\n\n\n具体开通流程和快速入门请直接移步[腾讯云容器镜像服务个人版快速入门](https://cloud.tencent.com/document/product/1141/63910)\n\n\n# 配置 Github Actions\n\n\n## 编写 workflows 流程\n\n\n在 Node 项目的根目录新建`.github/workflows/docker-build-deploy.yml`文件\n\n\n```yaml\nname: Docker Image CI & CD\n\non:\n  # 在直接推送/pr到Master分支时触发\n  push:\n    branches: [ \"master\" ]\n  pull_request:\n    branches: [ \"master\" ]\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - name: 构建镜像\n        # 选择推送到香港的镜像仓库会快很多\n        run: docker build --file Dockerfile --tag hkccr.ccs.tencentyun.com/命名空间/镜像名称 .\n      - name: 登录腾讯的 docker 镜像仓库\n        run: echo \"${{ secrets.TENCENT_REGISTRY_PASSWORD }}\" | docker login hkccr.ccs.tencentyun.com --username=用户名 --password-stdin\n      - name: 把构建好的镜像推送到腾讯仓库\n        run: docker push hkccr.ccs.tencentyun.com/命名空间/镜像名称\n\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - name: 初始化ssh并执行sh启动镜像\n        run: |\n          eval $(ssh-agent -s)\n          echo \"${{secrets.SERVER_SSH_PRIV_KEY}}\" > deploy.key\n          mkdir -p ~/.ssh\n          chmod 0600 deploy.key\n          ssh-add deploy.key\n          echo -e \"Host *\\n\\tStrictHostKeyChecking no\\n\\n\" > ~/.ssh/config\n          ssh root@${{secrets.SERVER_IP}} \"cd /home/deploy && sh deploy.sh\"\n    # 在build结束后才会运行deploy\n    needs: build\n```\n\n\n## Github Secrets\n\n\n上面 yml 文件中的 `secrets.XXX` 是一些秘钥，`Github` 为了保护你的秘钥，提供了使用变量的办法，我们可以在仓库的 `Settings -> Secrets`中定义变量，然后按照 `${{ secrets.XXX }}` 的格式，即可拿到变量值。\n\n\n## 连接云服务器\n\n\n`secrets.SERVER_SSH_PRIV_KEY` 是用来访问远程服务器的私钥，具体：\n\n- 在云服务器生成密钥对\n- 在远程服务器上添加公钥 (将公钥添加到服务器的 ~/.ssh/authorized_keys 文件中)\n- 在 Github 仓库设置私钥 (Settings > Secrets)\n\n`secrets.SERVER_IP` 是远程服务器地址\n\n\n## deploy.sh\n\n\n```shell\n#/bin/bash\ndocker pull hkccr.ccs.tencentyun.com/命名空间/镜像名称docker stop 镜像名称docker rm 镜像名称docker run -d --name 镜像名称 -p 7001:7001 hkccr.ccs.tencentyun.com/命名空间/镜像名称\n```\n\n\n# 配置 DockerFile\n\n\n## Dockerfile\n\n\n在 Node 项目的根目录新建`Dockerfile`文件\n\n\n```docker\nFROM node:12 AS build\n\nWORKDIR /app\n\nCOPY . .\n\nRUN npm install\n\nRUN npm run build\n\nFROM node:12-alpine\n\nWORKDIR /app\n\nCOPY --from=build /app/dist ./dist\nCOPY --from=build /app/bootstrap.js ./\nCOPY --from=build /app/package.json ./\n\nRUN apk add --no-cache tzdata\n\nENV TZ=\"Asia/Shanghai\"\n# 只安装生产的包\nRUN npm install --production\n\n# 暴露端口号\nEXPOSE 7001\n# 使用pm2启动项目\nRUN npm install pm2 -g\nCMD [ \"pm2-runtime\", \"npm\", \"--\", \"start\" ]\n```\n\n\n上述相关的 npm 命令需要根据自己实际命令修改。\n\n\n## .dockerignore\n\n\n在 Node 项目的根目录新建`.dockerignore`文件，可以将`.gitignore`中的配置复制过去\n\n\n# Done！\n\n\n接下来就可以推送代码到 master 分支，就会自动部署项目了！\n\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/FgtBByqByzlP4sMg5Ibn8-8xhuLX.png)\n\n",
+      "properties": {
+        "password": "",
+        "icon": "",
+        "创建时间": "2023-04-07T19:15:00.000Z",
+        "date": "2022-07-16",
+        "type": "Post",
+        "slug": "ovugli",
+        "配置类型": {
+          "type": "string",
+          "string": "文档"
+        },
+        "summary": "本文介绍了如何使用 Github Actions 持续集成 Docker 构建并部署 Node 项目到云服务器。具体流程包括搭建 Node 服务、开通腾讯云容器镜像服务、配置 Github Actions、编写 workflows 流程、连接云服务器、配置 DockerFile 等。最终实现推送代码到 master 分支自动部署项目。",
+        "更新时间": "2023-05-31T16:23:00.000Z",
+        "title": "Github Actions持续集成 Docker构建并部署Node项目到云服务器",
+        "category": "技术分享",
+        "tags": [
+          "Docker",
+          "CI/CD",
+          "Node",
+          "Github Actions"
+        ],
+        "status": "Published",
+        "urlname": "d7b1453e-530d-4614-8d41-c5ac6972e351",
+        "updated": "2023-06-01 00:23:00"
+      },
+      "body": "",
+      "realName": "Github Actions持续集成 Docker构建并部署Node项目到云服务器",
+      "relativePath": "/Github Actions持续集成 Docker构建并部署Node项目到云服务器.md"
+    },
+    {
+      "id": "335ae226-1802-4706-98b5-2a09bde056a1",
+      "doc_id": "335ae226-1802-4706-98b5-2a09bde056a1",
+      "title": "335ae226-1802-4706-98b5-2a09bde056a1",
+      "updated": 1685550180000,
+      "body_original": "\n# 引言\n\n\n这篇文章我其实最想解决的是【如何简单快速打造一个能同时导出`cjs`和`esm`的`npm`包】。在看了网上的各种教程，都没我想要的。要么就是利用`rollup`来构建，但是配置问题和兼容性问题又很棘手。最后是在看了[typedi](https://github.com/typestack/typedi)的代码仓库，发现很适合我，就借鉴过来了。 因为我的`npm`包是在`node`端使用的，所以只需要`cjs`和 esm`类型`的包就行，而`ts-node`就刚刚好能满足我的需求，所以我也没有使用其他构建工具。\n\n\n# 配置\n\n\n## 目录\n\n\n项目关键文件如下：\n\n\n```text\nnode-agile-client\n|--.github\n|  |--workflows\n|  |\t|--cd.yml\n|--build\n|  |--cjs\n|  |\t|--index.js\n|  |--esm5\n|  |\t|--index.js\n|  |--types\n|  |\t|--index.d.ts\n|  |--package.json\n|--src\n|  |--index.ts  \n|--package.json\n|--tsconfig.json\n|--tsconfig.esm5.json\n|--tsconfig.cjs.json\n|--tsconfig.types.json\n```\n\n- .github：github actions 配置文件\n- build：文件夹是打包后的产物，也是发不到 npm 上的文件夹，仓库 src 的文件是不会上传到 npm 的\n\t- cjs：CommonJS 模块的代码\n\t- esm5：ES Modules 模块的代码\n\t- types：类型声明文件\n\t- package.json：对 npm 包的定义说明\n- src：项目文件代码\n- package.json：对项目文件的定义说明及命令行操作\n- tsconfig.json：ts 编译配置主体文件\n- tsconfig.esm5.json：编译成 ems5 的编译配置\n- tsconfig.cjs.json：编译成 cjs 的编译配置\n- tsconfig.types.json：编译成类型声明文件的编译配置\n\n## package.json\n\n\n这是一份最终配置，具体代码：[node-agile-client](https://github.com/LetTTGACO/node-agile-client)\n\n\n```json\n{\n  \"name\": \"node-agile-client\",\n  \"version\": \"0.0.3\",\n  \"description\": \"AgileConfig的node客户端\",\n  \"main\": \"./cjs/index.js\",\n  \"module\": \"./esm5/index.js\",\n  \"typings\": \"./types/index.d.ts\",\n  \"scripts\": {\n    \"prebuild\": \"rimraf build\",\n    \"build\": \"npm run build:cjs && npm run build:esm5 && npm run build:types\",\n    \"build:esm5\": \"tsc --project tsconfig.esm5.json\",\n    \"build:cjs\": \"tsc --project tsconfig.cjs.json\",\n    \"build:types\": \"tsc --project tsconfig.types.json\",\n    \"postbuild\": \"cp LICENSE build/LICENSE && cp README.md build/README.md && cp package.json build/package.json\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/LetTTGACO/node-agile-client.git\"\n  },\n  \"tags\": [\n    \"agile\"\n  ],\n  \"keywords\": [\n    \"配置中心\"\n  ],\n  \"author\": \"\",\n  \"license\": \"ISC\",\n  \"bugs\": {\n    \"url\": \"https://github.com/LetTTGACO/node-agile-client/issues\"\n  },\n  \"homepage\": \"https://github.com/LetTTGACO/node-agile-client#readme\",\n  \"dependencies\": {\n    \"axios\": \"^0.26.1\",\n    \"fs-extra\": \"^10.1.0\",\n    \"md5\": \"^2.3.0\",\n    \"path\": \"^0.12.7\",\n    \"ws\": \"^8.5.0\"\n  },\n  \"devDependencies\": {\n    \"@types/fs-extra\": \"^9.0.13\",\n    \"@types/md5\": \"^2.3.2\",\n    \"@types/ws\": \"^8.5.3\",\n    \"rimraf\": \"^3.0.2\",\n    \"ts-node\": \"^10.8.1\",\n    \"typescript\": \"^4.7.4\"\n  }\n}\n```\n\n\n因为这个`package.json`最后会被拷贝到`build`文件夹中去，所以以下配置都是基于`build`目录下的配置选项\n\n\n| 关键参数    | 值                  | 备注             |\n| ------- | ------------------ | -------------- |\n| main    | ./cjs/index.js     | commonjs 的入口文件 |\n| module  | ./esm5/index.js    | esmodule 的入口文件 |\n| typings | ./types/index.d.ts | 类型声明的入口文件      |\n\n\n## tsconfig.json\n\n\n```json\n{\n  \"compilerOptions\": {\n    \"module\": \"commonjs\",\n    \"moduleResolution\": \"node\",\n    \"target\": \"es2018\",\n    \"lib\": [\"es2018\"],\n    \"outDir\": \"build/node\",\n    \"rootDirs\": [\"./src\"],\n    \"strict\": true,\n    \"sourceMap\": true,\n    \"inlineSources\": true,\n    \"removeComments\": false,\n    \"esModuleInterop\": true,\n    \"experimentalDecorators\": true,\n    \"emitDecoratorMetadata\": true,\n    \"forceConsistentCasingInFileNames\": true\n  },\n  \"exclude\": [\"build\", \"node_modules\", \"sample\", \"**/*.spec.ts\", \"test/**\"]\n}\n```\n\n\n## tsconfig.cjs.json\n\n\n```json\n{\n  \"extends\": \"./tsconfig.json\",\n  \"compilerOptions\": {\n    \"module\": \"CommonJS\",\n    \"outDir\": \"build/cjs\"\n  },\n}\n```\n\n\n## tsconfig.esm5.json\n\n\n```json\n{\n  \"extends\": \"./tsconfig.json\",\n  \"compilerOptions\": {\n    \"module\": \"ES2015\",\n    \"target\": \"ES5\",\n    \"outDir\": \"build/esm5\",\n  },\n}\n```\n\n\n## tsconfig.types.json\n\n\n```json\n{\n  \"extends\": \"./tsconfig.json\",\n  \"compilerOptions\": {\n    \"declaration\": true,\n    \"emitDeclarationOnly\": true,\n    \"outDir\": \"build/types\",\n  },\n}\n```\n\n\n# 自动化发布\n\n\n在项目根目录新建`.github/workflows/cd.yml`，并配置`github actions`，`secrets.NPM_PUBLISH_TOKEN`需要去`npm`官网生成`token`并配置到`github`仓库的`Actions secrets`中。\n\n\n```yaml\nname: CD\non:\n  release:\n    types: [created]\njobs:\n  publish:\n    name: Publish to NPM\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v2\n      - uses: actions/setup-node@v2\n        with:\n          node-version: 'lts/*'\n          registry-url: https://registry.npmjs.org\n      - run: npm ci --ignore-scripts\n      - run: npm run build:cjs\n      - run: npm run build:esm5\n      - run: npm run build:types\n      - run: cp LICENSE build/LICENSE\n      - run: cp README.md build/README.md\n      - run: jq 'del(.devDependencies) | del(.scripts)' package.json > build/package.json\n      - run: npm publish ./build\n        env:\n          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}\n```\n\n\n# 大功告成！\n\n\n经过以上配置，就可以在`github`创建`release`版本时触发`actions`，将`build`文件夹中的压缩包发布到`npm`了！\n\n",
+      "properties": {
+        "password": "",
+        "icon": "",
+        "创建时间": "2023-04-07T19:15:00.000Z",
+        "date": "2022-06-23",
+        "type": "Post",
+        "slug": "qzmpp5",
+        "配置类型": {
+          "type": "string",
+          "string": "文档"
+        },
+        "summary": "本文介绍了如何使用Github Actions自动化发布npm包，以及如何打造一个同时导出cjs和esm的npm包。文章详细介绍了配置文件的目录结构和关键参数，以及自动化发布的具体步骤。",
+        "更新时间": "2023-05-31T16:23:00.000Z",
+        "title": "利用github actions自动化发布npm",
+        "category": "技术分享",
+        "tags": [
+          "Github Actions",
+          "Node"
+        ],
+        "status": "Published",
+        "urlname": "335ae226-1802-4706-98b5-2a09bde056a1",
+        "updated": "2023-06-01 00:23:00"
+      },
+      "body": "",
+      "realName": "利用github actions自动化发布npm",
+      "relativePath": "/利用github actions自动化发布npm.md"
+    },
+    {
+      "id": "08ccfc16-c8cb-42a2-ad65-b37c4d49ce78",
+      "doc_id": "08ccfc16-c8cb-42a2-ad65-b37c4d49ce78",
+      "title": "08ccfc16-c8cb-42a2-ad65-b37c4d49ce78",
+      "updated": 1681103040000,
+      "body_original": "\n# 引言\n\n\n最近发现`Alfred`简直不要太好用，快速打开网址功能（Web Search）在工作中使用起来行云流水，再也不用去一堆标签中寻找常用的网址。\n\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/Fv_hSWNtWTOroC6OS4YOH23qjov0.png)\n\n\n但是在项目开发过程中，经常需要打开或运行各种项目，所以需要经常使`iTerm`或者`IDE`进入到各种项目文件夹中。在`VSCode`中，大家经常会使用`code`命令打开项目，再配合环境变量的别名设置，使用起来很方便。但是！我是忠诚的`WebStorm`党派，每次打开项目都得先打开应用然后找到需要打开的项目（不过后来发现，`WebStorm`其实也有命令行启动器，效果也一样）。但是这么做也有一个痛点，就是需要事先配置环境变量的别名才能做到快速打开。 最近一琢磨，可以利用`Aflfed`的`Workflows`功能去尝试一下，于是真被我搞出来了，这里记录一下。\n\n\n# 开始\n\n\n## Open in WebStorm\n\n\n用`WebStrom`打开项目。通过`code`命令打开指定目录下的文件夹，快速打开项目。效果如下：\n\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/ljMKIzYLU9Vg0ZDdlgkVUc2TAFkL.gif)\n\n\n### 运行流程\n\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/Fi1CSGPgbhxcEmVJsWkhTRKofLx0.png)\n\n\n### 设置\n\n1. 右下角新建一个`Blank Workflow`，配置如下：\n\n注意`Bundle id`必须是唯一的才行。\n\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/FkbsFFLjrHAiiyFhMyAnsYxAG1cu.png)\n\n1. 右键新增一个`File Filter`，配置如下：\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/FtNswxM5ZqzKXFXYXRPMO5gdQMc4.png)\n\n\n`Basic Setup`基础设置。\n\n- Keyword: code\n- with space: true\n- Placeholder Title: Open in WebStorm\n- Placeholder Subtext: 请继续输入以打开项目\n- File Types: 文件类型，随便拖一个文件夹进去表示只识别文件夹，过滤掉文件\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/Fteyhe06uV8m5mE7wZoNN6IJ-GE1.png)\n\n\n`Scope`搜索范围\n\n- Search Scope: 指定搜索范围，将目录拖拽进去即可\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/FgE6bMn1YgtGzP1bkxhMhdRUvGn6.png)\n\n\n`Fields`和`Limit and Sort`保持不变，可以根据自己的习惯修改\n\n1. 左键单击并选择添加`Actions-Run Script`，配置如下：\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/FusgOROVeGtM5HvHHey1GxHOKdxL.png)\n\n- Language: /bin/zsh 终端，也可以选择/bin/bash 终端\n- with input as {query}: true\n- running instances: Sequentially\n- Script: /usr/local/bin/wstorm “{query}”\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/Fj3KjVMT_TxIJCWRGGZdcplCQViA.png)\n\n\n注意：使用`/usr/local/bin/wstorm`命令需要在`WebStorm`中开启工具-创建命令行启动器，配置脚本位置为`/usr/local/bin`，并配置脚本命令为`wstorm`。\n\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/FiyIJ9N-DdDJK4NvGJwCwO_EqjeW.png)\n\n\n## Open in iTerm\n\n\n从`iTerm`中打开文件夹。通过`cd`命令进入指定目录下的文件夹，快速打开项目并运行。效果如下：\n\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/ltjnpxJnEnmaDsxBBb2Q3M11U_tJ.gif)\n\n\n### 运行流程\n\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/FlehoM7bdsPdu33pG4_DfRDM06wl.png)\n\n\n### 设置\n\n1. 新建一个`Blank workflow`，配置如下：\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/FoiKddQ7QD7GegR1SoQ3Em0xGpwT.png)\n\n1. 新增`File Filter`，配置如下：\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/Fltm6hEMqabbF4xluHh9ph0HYpoG.png)\n\n1. 左键单击并选择添加 Actions-Run NSAppleScript，配置如下：\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/FoE5xUh8YN6K2pZSd6a976xz5KF_.png)\n\n\n```text\n-- For the latest version:\n-- https://github.com/vitorgalvao/custom-alfred-iterm-scripts\n\n-- Set this property to true to always open in a new window\nproperty open_in_new_window : false\n\n-- Set this property to false to reuse current tab\nproperty open_in_new_tab : true\n\n-- Handlers\non new_window()\ntell application \"iTerm\" to create window with default profile\nend new_window\n\non new_tab()\ntell application \"iTerm\" to tell the first window to create tab with default profile\nend new_tab\n\non call_forward()\ntell application \"iTerm\" to activate\nend call_forward\n\non is_running()\napplication \"iTerm\" is running\nend is_running\n\non has_windows()\nif not is_running() then return false\nif windows of application \"iTerm\" is {} then return false\ntrue\nend has_windows\n\non send_text(custom_text)\ntell application \"iTerm\" to tell the first window to tell current session to write text custom_text\nend send_text\n\n-- Main\non alfred_script(query)\nif has_windows() then\nif open_in_new_window then\nnew_window()\nelse if open_in_new_tab then\nnew_tab()\nelse\n-- Reuse current tab\nend if\nelse\n-- If iTerm is not running and we tell it to create a new window, we get two\n-- One from opening the application, and the other from the command\nif is_running() then\nnew_window()\nelse\ncall_forward()\nend if\nend if\n\n-- Make sure a window exists before we continue, or the write may fail\nrepeat until has_windows()\ndelay 0.01\nend repeat\n\nsend_text(query)\ncall_forward()\nend alfred_script\n```\n\n\n# 大功告成！\n\n",
+      "properties": {
+        "password": "",
+        "icon": "",
+        "创建时间": "2023-04-07T19:15:00.000Z",
+        "date": "2022-04-19",
+        "type": "Post",
+        "slug": "rm057k",
+        "配置类型": {
+          "type": "string",
+          "string": "文档"
+        },
+        "summary": "Alfred YYDS",
+        "更新时间": "2023-04-10T05:04:00.000Z",
+        "title": "程序员必备——Mac效率工具Alfred Workflows配置",
+        "category": "技术分享",
+        "tags": [
+          "效率工具"
+        ],
+        "status": "Published",
+        "urlname": "08ccfc16-c8cb-42a2-ad65-b37c4d49ce78",
+        "updated": "2023-04-10 13:04:00"
+      },
+      "body": "",
+      "realName": "程序员必备——Mac效率工具Alfred Workflows配置",
+      "relativePath": "/程序员必备——Mac效率工具Alfred Workflows配置.md"
+    },
+    {
+      "id": "f674c03b-a560-4d80-984a-ede9d0ec6d9f",
+      "doc_id": "f674c03b-a560-4d80-984a-ede9d0ec6d9f",
+      "title": "f674c03b-a560-4d80-984a-ede9d0ec6d9f",
+      "updated": 1685550180000,
+      "body_original": "\n# 引言\n\n\n其实一开始没打算要搞这玩意儿的，事情的起因还得从我同事开始说起。 同事利用空余时间，开发了一款表情包小程序和 App，里面有各种表情包可以下载，挺有意思，我也推荐了其他朋友使用。\n\n\n然后我就琢磨着也搞个什么玩玩，前几天想到了一个点子，准备着手开发`Node`服务端时，想到有一些连接参数、可配置参数、账号密码什么的我又不想写死在代码里。因为公司用的是`Apollo`，一些可配置的参数是放在`Apollo`来管理的。再加上我问了下我同事，他的项目就是把这些东西写死在代码里的，他也觉得如果有一个配置中心来管理这些的话会方便很多。 \n\n\n但是`Apollo`过于复杂了，对于我这种小项目是有点过了，于是在`Github`搜索一圈之后，偶然发现了[AgileConfig](https://github.com/dotnetcore/AgileConfig)这个轻量级的配置中心，但可惜的是只有`C#`的客户端，其他语言的客户端都没有。于是我就抱着试一试的想法加了这个项目的 QQ 群，果然还没有人开发`nodejs`的客户端。 于是我的兴趣就来了，由于我以前有`Java`语言的基础，所以`C#`的代码勉强能读懂，所以结合着`C#`的客户端和与群主的交流，终于开发出了一个相对稳定的`nodejs`客户端：[node-agile-client](https://github.com/LetTTGACO/node-agile-client) \n\n\n就此分享下我的开发过程和源码逻辑。\n\n\n# 开始\n\n\n配置中心听起来很高大上，其实说白了就是一个在线的数据库，客户端可以通过`http`请求去获取某个应用在某个环境下的`JSON`配置。所以我要做的就是通过`http`请求拿数据就完事，就是如此简单。\n\n\n当然配置中心最核心的不只是能分应用分环境地存储数据，高可用也是其必不可少的能力。所以配置中心一般都是多节点分布式部署，客户端的代码大部分代码逻辑也是围绕着高可用去实现。\n\n\n[AgileConfig](https://github.com/dotnetcore/AgileConfig)服务端除了向外暴露获取配置的`http`接口，还提供了`websocket`长链接机制，当配置中心发生配置变更时会发送消息告诉客户端。\n\n\n# 基础工作原理流程图\n\n\n于是我就构思了[node-agile-client](https://github.com/LetTTGACO/node-agile-client)的基础工作原理流程图：\n\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/FnGZZCTPJNVUKA3cSKxwOv45nRzh.png)\n\n\n我的想法是充分利用缓存，`node`使用端在需要时只需要读取本地的配置文件或者内存中的缓存即可拿到`json`文件。对于缓存的处理，如下图所示：\n\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/Fi902QOqP5_v6kgBr4U5XnKHf_As.jpeg)\n\n\n# 完整工作原理流程图\n\n\n在完整的研究了`AgileConfig`的`C#`客户端原理之后，发现`AgileConfig`有以下几个功能点：\n\n\n---\n\n- 多节点`http`访问\n- 多节点`websocket`访问\n- `websocket`心跳检测时会返回当前配置中心文件的`md5`\n- 手动更新配置时会通过`websocket`向客户端发送需要更新的消息\n- 手动关闭连接时会通过`websocket`向客户端发送需要关闭连接的消息\n\n所以基于以上几个功能点，我画出了`node-agile-client`的完整工作原理流程图：\n\n\n![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/blog-images/Fi8seFPwjcCvorcZxZY1A2bMTZz4.png)\n\n\n# 代码实现\n\n\n接下来就到了代码实现的阶段，由于是第一次完整开发`npm`包，没啥经验，所以实现需求是第一要务，暂不考虑`npm`包的打包压缩、`TypeScript`支持等等功能。开发出来的包也并不适用于生产环境，待后期慢慢完善。\n\n\n## 目录结构\n\n\n## 源码逻辑\n\n\n先说明一下配置参数说明：\n\n\n| 配置项名称       | 数据类型    | 配置项说明       | 必填 | 备注                                            |\n| ----------- | ------- | ----------- | -- | --------------------------------------------- |\n| appid       | string  | 应用 ID       | 是  | 对应后台管理中应用的`应用ID`                              |\n| secret      | string  | 应用密钥        | 是  | 对应后台管理中应用的`密钥`                                |\n| nodes       | string  | 应用配置节点      | 是  | 存在多个节点则使用逗号`,`分隔                              |\n| env         | string  | 配置中心的环境     | 否  | 通过此配置决定拉取哪个环境的配置信息；如果不配置，服务端会默认返回第一个环境的配置     |\n| name        | string  | 连接客户端的自定义名称 | 否  | 方便在 agile 配置中心后台对当前客户端进行查阅与管理                 |\n| tag         | string  | 连接客户端自定义标签  | 否  | 方便在 agile 配置中心后台对当前客户端进行查阅与管理                 |\n| httptimeout | number  | http 请求超时时间 | 否  | 配置 client 发送 http 请求的时候的超时时间，默认 100000(100 秒) |\n| debug       | boolean | debug 模式    | 否  | 打印更多信息                                        |\n\n\n```javascript\nconst axios = require('axios')\nconst path = require('path')\nconst fs = require('fs-extra')\n// utils\nconst { generateAuthorization, transformConfig, getTime, generateUrl } = require('./utils')\nconst { WS } = require('./ws')\n// const\nconst { WEBSOCKET_ACTION } = require('./const/ws')\n\n// 配置缓存\nlet agileConfigCache\n\n/**\n* 初始化agile配置\n* @param options\n* @returns {Promise<void>}\n*/\nasync function init(options) {\n  const { appid, secret, env, nodes } = options\n  const beginTime = Date.now();\n  // 生成请求头\n  // 请求http/websocket需要特定的请求头，详情看utils/auth.js文件\n  options.headers = generateAuthorization(options)\n  try {\n    // 初始化agile配置\n    await initAgileConfig(options);\n    console.info(`【agile】: 初始化agile服务成功，耗时: ${Date.now() - beginTime}ms。`);\n  } catch (err) {\n    console.error({\n      message: '【agile】: 初始化agile失败',\n      error: err\n    });\n    // 退出进程\n    process.exit(-1);\n  }\n}\n\n/**\n* 初始化agile配置\n* @param options\n* @returns {Promise<*|undefined>}\n*/\nasync function initAgileConfig(options) {\n  // websocket长连接\n  // 这里websocket和http请求不是阻塞的，防止http/ws其中一个连接失败时阻塞流程\n  getNotifications(options)\n  await getAgileConfigAsync(options, true);\n}\n\n/**\n* websockt连接\n* @param options\n*/\nfunction getNotifications(options) {\n  // 生成ws连接的Url\n  const wsPaths = generateUrl(options, true)\n  \n  // 递归调用，用于多节点保证可用性\n  function connect(index) {\n    try {\n      const ws = new WS(wsPaths[index], {\n        debug: !!options.debug,\n        wsOptions: { headers: options.headers },\n      })\n      ws.websocketOnOpen(() => {\n        console.info(`【agile】: websocket连接成功，连接地址：${wsPaths[index]}`)\n      })\n      ws.websocketOnMessage((data) => {\n        if (data.indexOf(\"Action\") !== -1) {\n          // 服务端更新了\n          const { Action: action } = JSON.parse(data)\n          if (action === WEBSOCKET_ACTION.RELOAD) {\n            // 不使用本地缓存，直接发起http请求更新缓存\n            getAgileConfigAsync(options, false).catch()\n          }\n          if (action === WEBSOCKET_ACTION.OFFLINE) {\n            // 关闭ws连接\n            ws.removeSocket(true)\n          }\n        } else if (data !== '0' && data.startsWith('V:')) {\n          // 心跳检测时/服务端主动关闭连接时，同步配置\n          // 对比本地缓存中的MD5和心跳检测时服务端返回的MD5\n          if (data.slice(2) !== agileConfigCache.md5) {\n            console.info('【agile】: 配置更新，即将重新读取配置')\n            // 不使用本地缓存，直接发起http请求更新缓存\n            getAgileConfigAsync(options, false).catch()\n          }\n        }\n      })\n      ws.websocketOnError((err) => {\n        console.warn({\n          message: '【agile】: websocket连接发生错误，正在尝试重新连接...',\n          error: err\n        });\n        // 连接下一个节点，尝试尝试重新连接ws\n        throw err\n      })\n      ws.websocketOnClose(() => {\n        console.warn('【agile】: websocket断开连接，将会读取本地缓存');\n      })\n    } catch (err) {\n      // 初始化失败时，更换ws节点\n      index = index + 1;\n      if (index < wsPaths.length) {\n        // 递归调用，连接下一个节点\n        connect(index)\n      } else {\n        console.error({\n          url: `【agile】：请求地址：${wsPaths}`,\n          message: `【agile】：websocket连接失败，将会读取本地缓存`,\n          error: err,\n        })\n      }\n    }\n  }\n  connect(0)\n}\n\n/**\n* 异步获取agile配置\n* @param options\n* @param useCache 是否使用缓存\n* @returns {Promise<*>}\n*/\nasync function getAgileConfigAsync(options, useCache) {\n  if (useCache) {\n    // 优先从缓存中获取信息\n    const beginTime = Date.now();\n    const agileConfig = getAgileConfigFromCache(beginTime);\n    if (agileConfig) {\n      return agileConfig;\n    }\n    console.info('【agile】: 开始初始化agile配置(通过接口获取)');\n  }\n  // 从接口中获取\n  try {\n    agileConfigCache = await getAgileConfigPromise(options);\n    // 写入本地文件\n    fs.writeJsonSync(path.resolve(__dirname, './agileConfig.json'), agileConfigCache);\n    console.info(`【agile】: 更新缓存成功, 更新时间：${getTime()}`)\n    return agileConfigCache;\n  } catch (err) {\n    console.warn({\n      message: '【agile】: 更新缓存失败，将会读取本地缓存',\n      error: err\n    });\n    throw err;\n  }\n}\n\n/**\n* 从缓存中获取agile配置\n* @param beginTime\n* @returns {*}\n*/\nfunction getAgileConfigFromCache(beginTime) {\n  if (agileConfigCache) {\n    return agileConfigCache;\n  }\n  try {\n    const cacheFile = path.join(__dirname, './agileConfig.json');\n    const isHave = !!fs.statSync(cacheFile).size;\n    console.info('【agile】: 开始初始化agile配置(通过缓存获取)');\n    if (isHave) {\n      // 从本地文件读取配置\n      agileConfigCache = fs.readJsonSync(path.resolve(__dirname, './agileConfig.json'));\n      if (agileConfigCache) {\n        return agileConfigCache\n      }\n    }\n  } catch (err) {}\n  \n  return agileConfigCache;\n}\n\n/**\n* 从服务端获取配置并写入缓存\n* @param options\n* @returns {Promise<*>}\n*/\nasync function getAgileConfigPromise(options) {\n  // 获取http请求url\n  const urlPaths = generateUrl(options, false);\n  let agileConfigRes\n  // 递归调用，适配多节点获取配置\n  const getConfig = async (index) => {\n    console.info(`【agile】：接口请求地址：${urlPaths[index]}`)\n    try {\n      const response = await axios.get(urlPaths[index], {\n        timeout: options.httptimeout || 100000,\n        headers: {\n          ...options.headers,\n        },\n      })\n      agileConfigRes = transformConfig(response.data);\n    } catch (err) {\n      index = index + 1;\n      if (index < urlPaths.length) {\n        // 递归调用，连接下一个节点\n        await getConfig(urlPaths, index);\n      } else {\n        console.error({\n          url: `agile请求地址：${urlPaths}`,\n          message: `【agile】警告：获取agile配置失败,appid: ${options.appid}`,\n          error: err,\n        })\n        throw err;\n      }\n    }\n  };\n  await getConfig(urlPaths, 0);\n  return agileConfigRes\n}\n\n\n/**\n* 同步获取Agile配置\n* @returns {*}\n*/\nfunction getAgileConfig() {\n  if (!agileConfigCache) {\n    try {\n      agileConfigCache = fs.readJsonSync(path.resolve(__dirname, './agileConfig.json'))\n    } catch (err) {}\n    if (!agileConfigCache) {\n      throw new Error('【agile】: 请确保agile初始化已完成！');\n    }\n  }\n  return agileConfigCache.data;\n}\n\nexports.init = init\nexports.getAgileConfig = getAgileConfig\n```\n\n\n```javascript\nconst { WebSocket } = require('ws');\n\nclass WS {\n  constructor(socketUrl, option) {\n    this.socketUrl = socketUrl\n    this.option = {\n      onOpenAutoSendMsg:\"\",\n      heartTime: 30000, // 心跳时间间隔\n      heartMsg: 'ping', // 心跳信息,默认为'ping'\n      isReconnect: true, // 是否自动重连\n      reconnectTime: 5000, // 重连时间间隔\n      reconnectCount: -1, // 重连次数 -1 则不限制\n      openCallback: null, // 连接成功的回调\n      closeCallback: null, // 关闭的回调\n      messageCallback: null, // 消息的回调\n      errorCallback: null, // 错误的回调\n      debug: false,  //是否打开debug模式\n      ...option,\n    }\n    this.websocket = null\n    this.sendPingInterval = null  //心跳定时器\n    this.reconnectInterval = null  //重连定时器\n    this.activeLink = true  //socket对象是否可用\n    this.disconnect = false  //是否是服务端主动切断socket连接\n    this.reconnectNum = 0 //重连次数限制\n    this.init()\n  }\n  \n  /**\n  * 初始化\n  */\n  init() {\n    Reflect.deleteProperty(this, this.websocket)\n    this.websocket = new WebSocket(this.socketUrl, {\n      ...this.option.wsOptions,\n    })\n    this.websocketOnOpen()\n    this.websocketOnMessage()\n    this.websocketOnError()\n    this.websocketOnClose()\n  }\n  \n  /**\n  * 连接成功\n  */\n  websocketOnOpen(callback) {\n    this.websocket.onopen = (event) => {\n      if (this.option.debug) console.log('%c websocket链接成功', 'color:green')\n      // 连接成功时定时向发送消息\n      this.sendPing(this.option.heartTime, this.option.heartMsg);\n      if(this.option.onOpenAutoSendMsg){\n        this.send(this.option.onOpenAutoSendMsg)\n      }\n      if (typeof callback === 'function') {\n        this.disconnect = false\n        callback(event)\n      } else {\n        (typeof this.option.openCallback === 'function') && this.option.openCallback(event)\n      }\n    }\n  }\n  \n  /**\n  * 发送数据\n  * @param message\n  */\n  send (message){\n    if (this.websocket.readyState !== this.websocket.OPEN) {\n      new Error('没有连接到服务器，无法发送消息')\n      return\n    }\n    this.websocket.send(message)\n  }\n  \n  /**\n  * 触发接收消息事件\n  * @param callback\n  */\n  websocketOnMessage(callback) {\n    this.websocket.onmessage = (event) => {\n      // 收到任何消息，重新开始倒计时心跳检测\n      if (typeof callback === 'function') {\n        callback(event.data)\n      } else {\n        (typeof this.option.messageCallback === 'function') && this.option.messageCallback(event.data)\n      }\n    }\n  }\n  \n  /**\n  * 连接错误\n  * @param callback\n  */\n  websocketOnError(callback) {\n    this.websocket.onerror = (event) => {\n      if (this.option.debug) console.error('连接发生错误', event)\n      if (typeof callback === 'function') {\n        callback(event)\n      } else {\n        (typeof this.option.errorCallback === 'function') && this.option.errorCallback(event)\n      }\n    }\n  }\n  \n  /**\n  * 连接关闭\n  */\n  websocketOnClose(callback) {\n    this.websocket.onclose = (event) => {\n      if (this.option.debug) console.warn('socket连接关闭,关于原因:', event)\n      clearInterval(this.sendPingInterval)\n      clearInterval(this.reconnectInterval);\n      if (this.activeLink && this.option.isReconnect) {\n        this.onReconnect()\n      } else {\n        this.activeLink = false;\n        if (this.option.debug) console.log('%c websocket链接完全关闭', 'color:green')\n      }\n      if (typeof callback === 'function') {\n        callback(event)\n      } else {\n        (typeof this.option.closeCallback === 'function') && this.option.closeCallback(event)\n      }\n    }\n  }\n  \n  /**\n  * 连接事件\n  */\n  onReconnect() {\n    if (this.option.debug) console.warn(`非正常关闭,${this.option.reconnectTime}毫秒后触发重连事件`)\n    if (this.option.reconnectCount === -1 || this.option.reconnectCount > this.reconnectNum) {\n      this.reconnectInterval = setTimeout(() => {\n        this.reconnectNum++\n        if (this.option.debug) console.warn(`正在准备第${this.reconnectNum}次重连`)\n        this.init()\n      }, this.option.reconnectTime)\n    } else {\n      this.activeLink = false;\n      if (this.option.debug) console.warn(`已重连${this.reconnectNum}次仍然没有响应,取消重连`)\n      clearInterval(this.reconnectInterval);\n    }\n  }\n  \n  /**\n  * 移除socket并关闭\n  */\n  removeSocket(disconnect) {\n    this.activeLink = false\n    this.disconnect = disconnect\n    this.websocket.close(1000)\n  }\n  \n  /**\n  * 心跳机制\n  * @param time\n  * @param ping\n  */\n  sendPing (time = 5000, ping = 'ping'){\n    clearInterval(this.sendPingInterval);\n    if (time === -1) return\n    this.send(ping)\n    this.sendPingInterval = setInterval(() => {\n      this.send(ping)\n    }, time)\n  }\n  \n  /**\n  * 返回websocket实例\n  * @returns {null}\n  */\n  getWebsocket() {\n    return this.websocket\n  }\n  \n  /**\n  * 查看连接状态\n  */\n  getActiveLink() {\n    return {\n      activeLink: this.activeLink,\n      disconnect: this.disconnect\n    }\n  }\n}\n```\n\n\n# 开始使用\n\n\n## 安装\n\n\n```shell\nnpm i node-agile-client\n```\n\n\n## 初始化\n\n\n```javascript\nconst { init } = require('node-agile-client');\n\ninit({\n  appid: 'app',\n  secret: 'xxx',\n  node: 'http://192.168.1.1,http://192.168.1.2',\n  env: 'DEV',\n  tag: '',\n  name: '',\n  httptimeout: 100,\n  debug: false,\n});\n```\n\n\n## 获取配置\n\n\n```javascript\nconst { getAgileConfig }  = require('node-agile-client');\n\nconst { token, url } = getAgileConfig();\n```\n\n",
+      "properties": {
+        "password": "",
+        "icon": "",
+        "创建时间": "2023-04-07T19:15:00.000Z",
+        "date": "2022-04-28",
+        "type": "Post",
+        "slug": "wqx8a7",
+        "配置类型": {
+          "type": "string",
+          "string": "文档"
+        },
+        "summary": "该文档介绍了如何使用node-agile-client为开源社区做贡献，开发AgileConfig的NodeJS客户端。该客户端包括了异步获取agile配置、从缓存中获取agile配置、从服务端获取配置并写入缓存、同步获取Agile配置等功能。通过该客户端，可以轻松获取到Agile配置。",
+        "更新时间": "2023-05-31T16:23:00.000Z",
+        "title": "为开源社区做贡献-开发AgileConfig的NodeJS客户端：node-agile-client",
+        "category": "技术分享",
+        "tags": [
+          "Node"
+        ],
+        "status": "Published",
+        "urlname": "f674c03b-a560-4d80-984a-ede9d0ec6d9f",
+        "updated": "2023-06-01 00:23:00"
+      },
+      "body": "",
+      "realName": "为开源社区做贡献-开发AgileConfig的NodeJS客户端：node-agile-client",
+      "relativePath": "/为开源社区做贡献-开发AgileConfig的NodeJS客户端：node-agile-client.md"
+    }
+  ],
+  "catalog": [
+    {
+      "object": "page",
+      "id": "385c919d-f253-4976-9819-824ea05304e4",
+      "created_time": "2023-09-02T17:33:00.000Z",
+      "last_edited_time": "2023-09-02T20:01:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
+      },
+      "cover": null,
+      "icon": {
+        "type": "external",
+        "external": {
+          "url": "https://www.notion.so/icons/notification_blue.svg"
+        }
+      },
+      "parent": {
+        "type": "database_id",
+        "database_id": "eefc9490-e29c-4969-a7a1-fdd99bf743e0"
+      },
+      "archived": false,
+      "properties": {
+        "password": "",
+        "icon": "",
+        "创建时间": "2023-09-02T17:33:00.000Z",
+        "date": "2023-09-03",
+        "type": "Post",
+        "slug": "rollup-multi-input",
+        "配置类型": {
+          "type": "string",
+          "string": "文档"
+        },
+        "summary": "用Rollup打包多入口npm库，实现文件按需引入",
+        "更新时间": "2023-09-02T20:01:00.000Z",
+        "title": "Rollup打包——多入口配置",
+        "category": "技术分享",
+        "tags": [],
+        "status": "Published",
+        "urlname": "385c919d-f253-4976-9819-824ea05304e4",
+        "updated": "2023-09-03 04:01:00"
+      },
+      "url": "https://www.notion.so/Rollup-385c919df25349769819824ea05304e4",
+      "public_url": "https://1874.notion.site/Rollup-385c919df25349769819824ea05304e4"
+    },
+    {
+      "object": "page",
+      "id": "4296105d-56f7-4dc7-be6a-ac69ba786d50",
+      "created_time": "2023-04-09T18:39:00.000Z",
+      "last_edited_time": "2023-07-10T13:15:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
+      },
+      "cover": null,
+      "icon": {
+        "type": "external",
+        "external": {
+          "url": "https://www.notion.so/icons/gym_purple.svg"
+        }
+      },
+      "parent": {
+        "type": "database_id",
+        "database_id": "eefc9490-e29c-4969-a7a1-fdd99bf743e0"
+      },
+      "archived": false,
+      "properties": {
+        "password": "",
+        "icon": "",
+        "创建时间": "2023-04-09T18:39:00.000Z",
+        "date": "2023-04-10",
+        "type": "Post",
+        "slug": "migrate-blog-to-notion",
+        "配置类型": {
+          "type": "string",
+          "string": "文档"
+        },
+        "summary": "博客迁移记录",
+        "更新时间": "2023-07-10T13:15:00.000Z",
+        "title": "迁移博客到 Notion",
+        "category": "技术分享",
+        "tags": [
+          "Notion"
+        ],
+        "status": "Published",
+        "urlname": "4296105d-56f7-4dc7-be6a-ac69ba786d50",
+        "updated": "2023-07-10 21:15:00"
+      },
+      "url": "https://www.notion.so/Notion-4296105d56f74dc7be6aac69ba786d50",
+      "public_url": "https://1874.notion.site/Notion-4296105d56f74dc7be6aac69ba786d50"
+    },
+    {
+      "object": "page",
+      "id": "335ae226-1802-4706-98b5-2a09bde056a1",
+      "created_time": "2023-04-07T19:15:00.000Z",
+      "last_edited_time": "2023-05-31T16:23:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
+      },
+      "cover": null,
+      "icon": {
+        "type": "emoji",
+        "emoji": "🏢"
+      },
+      "parent": {
+        "type": "database_id",
+        "database_id": "eefc9490-e29c-4969-a7a1-fdd99bf743e0"
+      },
+      "archived": false,
+      "properties": {
+        "password": "",
+        "icon": "",
+        "创建时间": "2023-04-07T19:15:00.000Z",
+        "date": "2022-06-23",
+        "type": "Post",
+        "slug": "qzmpp5",
+        "配置类型": {
+          "type": "string",
+          "string": "文档"
+        },
+        "summary": "本文介绍了如何使用Github Actions自动化发布npm包，以及如何打造一个同时导出cjs和esm的npm包。文章详细介绍了配置文件的目录结构和关键参数，以及自动化发布的具体步骤。",
+        "更新时间": "2023-05-31T16:23:00.000Z",
+        "title": "利用github actions自动化发布npm",
+        "category": "技术分享",
+        "tags": [
+          "Github Actions",
+          "Node"
+        ],
+        "status": "Published",
+        "urlname": "335ae226-1802-4706-98b5-2a09bde056a1",
+        "updated": "2023-06-01 00:23:00"
+      },
+      "url": "https://www.notion.so/github-actions-npm-335ae2261802470698b52a09bde056a1",
+      "public_url": "https://1874.notion.site/github-actions-npm-335ae2261802470698b52a09bde056a1"
+    },
+    {
+      "object": "page",
+      "id": "d7b1453e-530d-4614-8d41-c5ac6972e351",
+      "created_time": "2023-04-07T19:15:00.000Z",
+      "last_edited_time": "2023-05-31T16:23:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
+      },
+      "cover": null,
+      "icon": {
+        "type": "emoji",
+        "emoji": "🏬"
+      },
+      "parent": {
+        "type": "database_id",
+        "database_id": "eefc9490-e29c-4969-a7a1-fdd99bf743e0"
+      },
+      "archived": false,
+      "properties": {
+        "password": "",
+        "icon": "",
+        "创建时间": "2023-04-07T19:15:00.000Z",
+        "date": "2022-07-16",
+        "type": "Post",
+        "slug": "ovugli",
+        "配置类型": {
+          "type": "string",
+          "string": "文档"
+        },
+        "summary": "本文介绍了如何使用 Github Actions 持续集成 Docker 构建并部署 Node 项目到云服务器。具体流程包括搭建 Node 服务、开通腾讯云容器镜像服务、配置 Github Actions、编写 workflows 流程、连接云服务器、配置 DockerFile 等。最终实现推送代码到 master 分支自动部署项目。",
+        "更新时间": "2023-05-31T16:23:00.000Z",
+        "title": "Github Actions持续集成 Docker构建并部署Node项目到云服务器",
+        "category": "技术分享",
+        "tags": [
+          "Docker",
+          "CI/CD",
+          "Node",
+          "Github Actions"
+        ],
+        "status": "Published",
+        "urlname": "d7b1453e-530d-4614-8d41-c5ac6972e351",
+        "updated": "2023-06-01 00:23:00"
+      },
+      "url": "https://www.notion.so/Github-Actions-Docker-Node-d7b1453e530d46148d41c5ac6972e351",
+      "public_url": "https://1874.notion.site/Github-Actions-Docker-Node-d7b1453e530d46148d41c5ac6972e351"
+    },
+    {
+      "object": "page",
+      "id": "f674c03b-a560-4d80-984a-ede9d0ec6d9f",
+      "created_time": "2023-04-07T19:15:00.000Z",
+      "last_edited_time": "2023-05-31T16:23:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
+      },
+      "cover": null,
+      "icon": {
+        "type": "emoji",
+        "emoji": "🎇"
+      },
+      "parent": {
+        "type": "database_id",
+        "database_id": "eefc9490-e29c-4969-a7a1-fdd99bf743e0"
+      },
+      "archived": false,
+      "properties": {
+        "password": "",
+        "icon": "",
+        "创建时间": "2023-04-07T19:15:00.000Z",
+        "date": "2022-04-28",
+        "type": "Post",
+        "slug": "wqx8a7",
+        "配置类型": {
+          "type": "string",
+          "string": "文档"
+        },
+        "summary": "该文档介绍了如何使用node-agile-client为开源社区做贡献，开发AgileConfig的NodeJS客户端。该客户端包括了异步获取agile配置、从缓存中获取agile配置、从服务端获取配置并写入缓存、同步获取Agile配置等功能。通过该客户端，可以轻松获取到Agile配置。",
+        "更新时间": "2023-05-31T16:23:00.000Z",
+        "title": "为开源社区做贡献-开发AgileConfig的NodeJS客户端：node-agile-client",
+        "category": "技术分享",
+        "tags": [
+          "Node"
+        ],
+        "status": "Published",
+        "urlname": "f674c03b-a560-4d80-984a-ede9d0ec6d9f",
+        "updated": "2023-06-01 00:23:00"
+      },
+      "url": "https://www.notion.so/AgileConfig-NodeJS-node-agile-client-f674c03ba5604d80984aede9d0ec6d9f",
+      "public_url": "https://1874.notion.site/AgileConfig-NodeJS-node-agile-client-f674c03ba5604d80984aede9d0ec6d9f"
+    },
+    {
+      "object": "page",
+      "id": "08ccfc16-c8cb-42a2-ad65-b37c4d49ce78",
+      "created_time": "2023-04-07T19:15:00.000Z",
+      "last_edited_time": "2023-04-10T05:04:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
+      },
+      "cover": null,
+      "icon": {
+        "type": "emoji",
+        "emoji": "📅"
+      },
+      "parent": {
+        "type": "database_id",
+        "database_id": "eefc9490-e29c-4969-a7a1-fdd99bf743e0"
+      },
+      "archived": false,
+      "properties": {
+        "password": "",
+        "icon": "",
+        "创建时间": "2023-04-07T19:15:00.000Z",
+        "date": "2022-04-19",
+        "type": "Post",
+        "slug": "rm057k",
+        "配置类型": {
+          "type": "string",
+          "string": "文档"
+        },
+        "summary": "Alfred YYDS",
+        "更新时间": "2023-04-10T05:04:00.000Z",
+        "title": "程序员必备——Mac效率工具Alfred Workflows配置",
+        "category": "技术分享",
+        "tags": [
+          "效率工具"
+        ],
+        "status": "Published",
+        "urlname": "08ccfc16-c8cb-42a2-ad65-b37c4d49ce78",
+        "updated": "2023-04-10 13:04:00"
+      },
+      "url": "https://www.notion.so/Mac-Alfred-Workflows-08ccfc16c8cb42a2ad65b37c4d49ce78",
+      "public_url": "https://1874.notion.site/Mac-Alfred-Workflows-08ccfc16c8cb42a2ad65b37c4d49ce78"
+    }
+  ]
+}
