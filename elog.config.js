@@ -11,12 +11,6 @@ module.exports = {
             select: {
               equals: 'Post'
             }
-          },
-          {
-            property: 'status',
-            select: {
-              equals: 'Published'
-            }
           }
         ]
       },
@@ -28,7 +22,7 @@ module.exports = {
     local: {
       outputDir: './docs',
       filename: 'title',
-      format: 'markdown',
+      format: 'matter-markdown',
       catalog: false,
       formatExt: ''
     }
