@@ -67,8 +67,8 @@
     {
       "id": "385c919d-f253-4976-9819-824ea05304e4",
       "doc_id": "385c919d-f253-4976-9819-824ea05304e4",
-      "updated": 1693905240000,
-      "body_original": "\n# 适用场景\n\n\n当开发一个组件包时，由于平台的差异，所以在某些实现上需要实现两套。\n\n\n例如，`multi-input`是一个可以同时用于微信小程序和浏览器环境的`npm`库，其中的`request`请求库在不同客户端的实现不一样。在微信环境下用的是`wx.request`，在浏览器环境用的是`fetch`。\n\n\n但是在微信环境使用时，我不希望我引入的代码中包含用不到的适用于浏览器环境的`fetch`等相关代码。再加上微信小程序对于代码体积的严格限制。所以我希望`multi-input`再引入的时候可以有多个入口，主逻辑代码直接引入`multi-input`，`request`库相关逻辑单独有个入口。\n\n\n解决办法有两种\n\n1. 将`request`库相关逻辑抽离成另外一个`npm`包\n2. `rollup`打包多入口文件并配合`package.json`中的`exports`字段实现\n\n本文介绍第二种方法，使用示例如下：\n\n\n```javascript\nimport { TestCore } from 'multi-input'\nimport { WebRequest } from 'multi-input/lib/web-request'\nimport { WxRequest } from 'multi-input/lib/web-request'\n```\n\n\n这样在微信小程序端使用并打包时，就不会将`WebRequest`相关代码打包到微信小程序代码中，实现按需引入。\n\n\n# 代码结构\n\n\n｜ 代码源码：[multi-input](https://github.com/LetTTGACO/build-project/tree/master/rollup/multi-input)\n\n\n`multi-input`库代码结构如下\n\n\n```text\n.\n|-multi-input\n  |-.gitignore\n  |-adapter // 这里面就是不同客户端的request请求库的实现\n  |  |-web-request.ts\n  |  |-wx-request.ts\n  |-src\n  |  |-core.ts\n  |  |-index.ts\n  |  |-manager\n  |  |  |-message-manager.ts\n  |  |-utils\n  |  |  |-url.ts\n  |-rollup.config.js // rollup打包配置\n  |-tsconfig.json\n  |-package.json\n```\n\n\n# 注意事项\n\n\n要想要外部以这样的方式引用，有五个必要条件\n\n1. `adapter`下的文件只能引用`adapter`目录中的文件\n2. `src`下中的文件只能引用`src`中的文件\n3. `multi-input`根目录下必须存在打包后的`lib/web-request`文件\n4. `package.json`中的`exports`字段中需要有`lib/web-request`的路径映射\n5. `rollup`需要分别打包`src`和`adapter`下的文件，多入口打包\n\n# Rollup配置\n\n\n功能点如下\n\n- 将`multi-input`以`esm`和`cjs`的模式导出，并分别导出到`dist/esm`和`dist/cjs`下\n- `adapter`下的请求库也分别以`esm`和`cjs`的模式导出，并分别导出到`dist/esm/adapter`和`dist/cjs/adapter`下\n- 打包后的类型声明文件和`js`文件和原文件目录结构保持一致\n\n```typescript\n// rollup.config.js\nimport resolve from \"@rollup/plugin-node-resolve\";\nimport commonjs from \"@rollup/plugin-commonjs\"; // 解析js\nimport typescript from \"@rollup/plugin-typescript\"; // 解析ts\n\nconst getBasePlugins = (tsConfig) => {\n  return [\n    resolve(),\n    commonjs(),\n    typescript({\n      ...tsConfig,\n    }),\n  ];\n};\n\nexport default [\n  // 主逻辑代码打包\n  {\n    input: \"src/index.ts\",\n    output: {\n      dir: \"dist/cjs\", // 打包到cjs目录\n      format: \"cjs\", // 以cjs模式打包\n      exports: \"named\", // 指定导出模式（自动、默认、命名、无）\n      preserveModules: true, // 保留模块结构，以原来的文件夹结构输出js\n      preserveModulesRoot: \"src\", // 将保留的模块放在根级别的此路径下\n    },\n    plugins: [\n      ...getBasePlugins({\n        outDir: \"dist/cjs\", // 声明文件输出目录\n        declaration: true,\n        // 指定声明文件的解析目录，这里主要是用于忽略adapter目录\n        filterRoot: \"src\",\n      }),\n    ],\n  },\n  {\n    input: \"src/index.ts\",\n    output: {\n      dir: \"dist/esm\",\n      format: \"esm\",\n      exports: \"named\",\n      preserveModules: true,\n      preserveModulesRoot: \"src\",\n    },\n    plugins: [\n      ...getBasePlugins({\n        outDir: \"dist/esm\",\n        declaration: true,\n        filterRoot: \"src\",\n      }),\n    ],\n  },\n  // adapter导出\n  {\n    input: {\n      \"web-request\": \"adapter/web-request.ts\",\n      \"wx-request\": \"adapter/wx-request.ts\",\n    },\n    output: [\n      {\n        dir: \"dist/cjs/adapter\",\n        format: \"cjs\",\n      },\n    ],\n    plugins: [\n      ...getBasePlugins({\n        outDir: \"dist/cjs/adapter\",\n        declaration: true,\n        // 指定声明文件的解析目录，这里主要是用于忽略src目录\n        // 注意tsconfig.json中不要指定rootDir，否则会导致adapter目录识别不到\n        filterRoot: \"adapter\",\n      }),\n    ],\n  },\n  {\n    input: {\n      \"web-request\": \"adapter/web-request.ts\",\n      \"wx-request\": \"adapter/wx-request.ts\",\n    },\n    output: [\n      {\n        dir: \"dist/esm/adapter\",\n        format: \"esm\",\n      },\n    ],\n    plugins: [\n      ...getBasePlugins({\n        outDir: \"dist/esm/adapter\",\n        declaration: true,\n        filterRoot: \"adapter\",\n      }),\n    ],\n  },\n];\n```\n\n\n# package.json配置\n\n\n```typescript\n// package.json\n{\n  \"name\": \"multi-input\",\n  \"version\": \"1.0.0\",\n  \"description\": \"多入口打包\",\n  \"main\": \"dist/cjs/index.js\",\n  \"module\": \"dist/esm/index.js\",\n  \"typings\": \"dist/esm/index.d.ts\",\n  \"scripts\": {\n    \"build\": \"rollup -c rollup.config.js --bundleConfigAsCjs\",\n    \"clean\": \"rimraf -rf ./dist\"\n  },\n  \"exports\": {\n    // 定义multi-input路径引用文件\n    \".\": {\n      \"import\": \"./dist/esm/index.js\", // esm import时引用时的文件路径\n      \"require\": \"./dist/cjs/index.js\", // cjs require时引用时的文件路径\n      \"types\": \"./dist/esm/index.d.ts\" // 类型声明文件路径\n    },\n    // 定义multi-input/adapter/web-request路径引用文件\n    \"./adapter/web-request\": {\n      \"import\": \"./dist/esm/adapter/web-request.js\", // esm import时引用时的文件路径\n      \"require\": \"./dist/cjs/adapter/web-request.cjs\", // cjs require时引用时的文件路径\n      \"types\": \"./dist/esm/adapter/web-request.d.ts\" // 类型声明文件路径\n    },\n    // 定义multi-input/adapter/wx-request路径引用文件\n    \"./adapter/wx-request\": {\n      \"import\": \"./dist/esm/adapter/wx-request.js\", // esm import时引用时的文件路径\n      \"require\": \"./dist/cjs/adapter/wx-request.cjs\", // cjs require时引用时的文件路径\n      \"types\": \"./dist/esm/adapter/wx-request.d.ts\" // 类型声明文件路径\n    }\n  },\n  \"files\": [\"dist\"],\n  \"author\": \"1874\",\n  \"license\": \"ISC\",\n  \"devDependencies\": {\n    \"@rollup/plugin-commonjs\": \"^25.0.4\",\n    \"@rollup/plugin-node-resolve\": \"^15.2.1\",\n    \"@rollup/plugin-typescript\": \"^11.1.3\",\n    \"rimraf\": \"^5.0.1\",\n    \"rollup\": \"^3.28.1\",\n    \"tslib\": \"^2.6.2\",\n    \"typescript\": \"^5.2.2\"\n  }\n}\n```\n\n\n# 打包后代码结构\n\n\n```typescript\n.\n|-multi-input\n  |-.gitignore\n  |-adapter\n  |  |-web-request.ts\n  |  |-wx-request.ts\n  |-dist // 打包产物\n  |  |-cjs\n  |  |  |-adapter\n  |  |  |  |-web-request.d.ts\n  |  |  |  |-web-request.js\n  |  |  |  |-wx-request.d.ts\n  |  |  |  |-wx-request.js\n  |  |  |-core.d.ts\n  |  |  |-core.js\n  |  |  |-index.d.ts\n  |  |  |-index.js\n  |  |  |-manager\n  |  |  |  |-message.d.ts\n  |  |  |  |-message.js\n  |  |  |-utils\n  |  |  |  |-url.d.ts\n  |  |  |  |-url.js\n  |  |-esm\n  |  |  |-adapter\n  |  |  |  |-web-request.d.ts\n  |  |  |  |-web-request.js\n  |  |  |  |-wx-request.d.ts\n  |  |  |  |-wx-request.js\n  |  |  |-core.d.ts\n  |  |  |-core.js\n  |  |  |-index.d.ts\n  |  |  |-index.js\n  |  |  |-manager\n  |  |  |  |-message.d.ts\n  |  |  |  |-message.js\n  |  |  |-utils\n  |  |  |  |-url.d.ts\n  |  |  |  |-url.js\n  |-src\n  |  |-core.ts\n  |  |-index.ts\n  |  |-manager\n  |  |  |-message.ts\n  |  |-utils\n  |  |  |-url.ts\n  |-rollup.config.js\n  |-tsconfig.json\n  |-package.json\n  |-pnpm-lock.yaml\n```\n\n\n# 参考资料\n\n- [Rollup中文文档](https://cn.rollupjs.org/introduction/)\n- [rollup/plugin-typescript插件配置](https://www.npmjs.com/package/@rollup/plugin-typescript)\n",
+      "updated": 1700647740000,
+      "body_original": "\n# 适用场景\n\n\n当开发一个组件包时，由于平台的差异，所以在某些实现上需要实现两套。\n\n\n例如，`multi-input`是一个可以同时用于微信小程序和浏览器环境的`npm`库，其中的`request`请求库在不同客户端的实现不一样。在微信环境下用的是`wx.request`，在浏览器环境用的是`fetch`。\n\n\n但是在微信环境使用时，我不希望我引入的代码中包含用不到的适用于浏览器环境的`fetch`等相关代码。再加上微信小程序对于代码体积的严格限制。所以我希望`multi-input`再引入的时候可以有多个入口，主逻辑代码直接引入`multi-input`，`request`库相关逻辑单独有个入口。\n\n\n解决办法有两种\n\n1. 将`request`库相关逻辑抽离成另外一个`npm`包\n2. `rollup`打包多入口文件并配合`package.json`中的`exports`字段实现\n\n本文介绍第二种方法，使用示例如下：\n\n\n```javascript\nimport { TestCore } from 'multi-input' // 引用的是 dist 文件中的代码\nimport { WebRequest } from 'multi-input/lib/web-request'// 引用的是 lib 文件中的代码\nimport { WxRequest } from 'multi-input/lib/web-request' // 引用的是 lib 文件中的代码\n```\n\n\n这样在微信小程序端使用并打包时，就不会将`WebRequest`相关代码打包到微信小程序代码中，实现按需引入。\n\n\n# 代码结构\n\n\n｜ 代码源码：[multi-input](https://github.com/LetTTGACO/build-project/tree/master/rollup/multi-input)\n\n\n`multi-input`库代码结构如下\n\n\n```text\n.\n|-multi-input\n  |-.gitignore\n  |-adapter // 这里面就是不同客户端的request请求库的实现的源代码\n  |  |-web-request.ts\n  |  |-wx-request.ts\n  |-src\n  |  |-core.ts\n  |  |-index.ts\n  |  |-manager\n  |  |  |-message.ts\n  |  |-utils\n  |  |  |-url.ts\n  |-rollup.config.js // rollup打包配置\n  |-tsconfig.json\n  |-package.json\n```\n\n\n# 注意事项\n\n\n要想要外部以这样的方式引用，有几个必要条件：\n\n1. 代码隔离：`adapter`下的文件只能引用`adapter`目录中的文件，`src`下中的文件只能引用`src`中的文件\n2. 打包产物路径存在：`multi-input`根目录下必须存在打包后的`lib/web-request`文件\n3. 路径映射：`package.json`中的`exports`字段中需要有`lib/web-request`的路径映射\n4. 多入口打包：`rollup`需要分别打包`src`和`adapter`下的文件\n\n# Rollup配置\n\n\n功能点如下\n\n- 将`multi-input`以`esm`模式导出到`dist`下\n- `adapter`下的请求库以`esm`模式导出到`lib`下\n- 打包后的类型声明文件和`js`文件和原文件目录结构保持一致\n\n```typescript\n// rollup.config.js\nimport resolve from \"@rollup/plugin-node-resolve\";\nimport commonjs from \"@rollup/plugin-commonjs\"; // 解析js\nimport typescript from \"@rollup/plugin-typescript\"; // 解析ts\n\nconst getBasePlugins = (tsConfig) => {\n  return [\n    resolve(),\n    commonjs(),\n    typescript({\n      ...tsConfig,\n    }),\n  ];\n};\n\nexport default [\n  // 主逻辑代码打包\n  {\n    input: \"src/index.ts\",\n    output: {\n      dir: \"dist\",\n      format: \"esm\",\n      exports: \"named\",\n      preserveModules: true,\n      preserveModulesRoot: \"src\",\n      sourcemap: true,\n    },\n    plugins: [\n      ...getBasePlugins({\n        outDir: \"dist\",\n        declaration: true,\n        filterRoot: \"src\",\n      }),\n    ],\n  },\n  // adapter导出\n  {\n    input: {\n      \"web-request\": \"adapter/web-request.ts\",\n      \"wx-request\": \"adapter/wx-request.ts\",\n    },\n    output: [\n      {\n        dir: \"lib\",\n        format: \"esm\",\n        sourcemap: true\n      },\n    ],\n    plugins: [\n      ...getBasePlugins({\n        outDir: \"lib\",\n        declaration: true,\n        filterRoot: \"adapter\",\n      }),\n    ],\n  },\n];\n```\n\n\n# package.json配置\n\n\n```typescript\n{\n  \"name\": \"multi-input\",\n  \"version\": \"1.0.0\",\n  \"description\": \"多入口打包\",\n  \"main\": \"dist/index.js\",\n  \"module\": \"dist/index.js\",\n  \"typings\": \"dist/index.d.ts\",\n  \"scripts\": {\n    \"build\": \"rollup -c rollup.config.js --bundleConfigAsCjs\",\n    \"clean\": \"rimraf -rf ./dist ./lib\"\n  },\n  \"files\": [\"dist\", \"lib\"],\n  \"exports\": {\n    // 定义multi-input路径引用文件\n    \".\": \"./dist/index.js\",\n    // 定义multi-input/lib/web-request路径引用文件\n    \"./lib/web-request\": {\n      \"import\": \"./lib/web-request.js\",\n      \"types\": \"./lib/web-request.d.ts\"\n    },\n    // 定义multi-input/lib/wx-request路径引用文件\n    \"./lib/wx-request\": {\n      \"import\": \"./lib/wx-request.js\",\n      \"types\": \"./lib/wx-request.d.ts\"\n    }\n  },\n  \"author\": \"1874\",\n  \"license\": \"ISC\",\n  \"devDependencies\": {\n    \"@rollup/plugin-commonjs\": \"^25.0.4\",\n    \"@rollup/plugin-node-resolve\": \"^15.2.1\",\n    \"@rollup/plugin-typescript\": \"^11.1.3\",\n    \"rimraf\": \"^5.0.1\",\n    \"rollup\": \"^3.28.1\",\n    \"tslib\": \"^2.6.2\",\n    \"typescript\": \"^5.2.2\"\n  }\n}\n```\n\n\n# 打包后代码结构\n\n\n```typescript\n.\n|-multi-input\n  |-dist // 主包打包产物\n  |  |-core.d.ts\n  |  |-core.js\n  |  |-core.js.map\n  |  |-index.d.ts\n  |  |-index.js\n  |  |-index.js.map\n  |  |-manager\n  |  |  |-message.d.ts\n  |  |  |-message.js\n  |  |  |-message.js.map\n  |  |-utils\n  |  |  |-url.d.ts\n  |  |  |-url.js\n  |  |  |-url.js.map\n  |-lib // request 插件打包产物\n  |  |-tslib.es6-4083ca3c.js\n  |  |-tslib.es6-4083ca3c.js.map\n  |  |-web-request.d.ts\n  |  |-web-request.js\n  |  |-web-request.js.map\n  |  |-wx-request.d.ts\n  |  |-wx-request.js\n  |  |-wx-request.js.map\n  |-adapter // request 插件源码\n  |  |-web-request.ts\n  |  |-wx-request.ts\n  |-src // 主包源码\n  |  |-core.ts\n  |  |-index.ts\n  |  |-manager\n  |  |  |-message.ts\n  |  |-utils\n  |  |  |-url.ts\n  |-package.json\n  |-pnpm-lock.yaml\n  |-rollup.config.js\n  |-tsconfig.json\n```\n\n\n# 参考资料\n\n- [Rollup中文文档](https://cn.rollupjs.org/introduction/)\n- [rollup/plugin-typescript插件配置](https://www.npmjs.com/package/@rollup/plugin-typescript)\n",
       "properties": {
         "password": "",
         "icon": "",
@@ -81,16 +81,16 @@
           "string": "文档"
         },
         "summary": "用Rollup打包多入口npm库，实现文件按需引入",
-        "更新时间": "2023-09-05T09:14:00.000Z",
+        "更新时间": "2023-11-22T10:09:00.000Z",
         "title": "Rollup打包——多入口配置",
         "category": "技术分享",
         "tags": [
           "Rollup",
           "打包构建"
         ],
-        "status": "Draft",
+        "status": "Published",
         "urlname": "385c919d-f253-4976-9819-824ea05304e4",
-        "updated": "2023-09-05 09:14:00"
+        "updated": "2023-11-22 10:09:00"
       },
       "body": "",
       "realName": "Rollup打包——多入口配置",
@@ -1757,6 +1757,57 @@
   "catalog": [
     {
       "object": "page",
+      "id": "385c919d-f253-4976-9819-824ea05304e4",
+      "created_time": "2023-09-02T17:33:00.000Z",
+      "last_edited_time": "2023-11-22T10:09:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
+      },
+      "cover": null,
+      "icon": {
+        "type": "external",
+        "external": {
+          "url": "https://www.notion.so/icons/notification_blue.svg"
+        }
+      },
+      "parent": {
+        "type": "database_id",
+        "database_id": "eefc9490-e29c-4969-a7a1-fdd99bf743e0"
+      },
+      "archived": false,
+      "properties": {
+        "password": "",
+        "icon": "",
+        "创建时间": "2023-09-02T17:33:00.000Z",
+        "date": "2023-09-03",
+        "type": "Post",
+        "slug": "rollup-multi-input",
+        "配置类型": {
+          "type": "string",
+          "string": "文档"
+        },
+        "summary": "用Rollup打包多入口npm库，实现文件按需引入",
+        "更新时间": "2023-11-22T10:09:00.000Z",
+        "title": "Rollup打包——多入口配置",
+        "category": "技术分享",
+        "tags": [
+          "Rollup",
+          "打包构建"
+        ],
+        "status": "Published",
+        "urlname": "385c919d-f253-4976-9819-824ea05304e4",
+        "updated": "2023-11-22 10:09:00"
+      },
+      "url": "https://www.notion.so/Rollup-385c919df25349769819824ea05304e4",
+      "public_url": "https://1874.notion.site/Rollup-385c919df25349769819824ea05304e4"
+    },
+    {
+      "object": "page",
       "id": "d2a19be4-4efc-428a-9ebb-0a85e340290d",
       "created_time": "2023-08-18T14:16:00.000Z",
       "last_edited_time": "2023-10-18T16:47:00.000Z",
@@ -1964,57 +2015,6 @@
       },
       "url": "https://www.notion.so/yuque-hexo-003fd62e3f1147f884799eb728ac6df8",
       "public_url": "https://1874.notion.site/yuque-hexo-003fd62e3f1147f884799eb728ac6df8"
-    },
-    {
-      "object": "page",
-      "id": "385c919d-f253-4976-9819-824ea05304e4",
-      "created_time": "2023-09-02T17:33:00.000Z",
-      "last_edited_time": "2023-09-05T09:14:00.000Z",
-      "created_by": {
-        "object": "user",
-        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
-      },
-      "last_edited_by": {
-        "object": "user",
-        "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
-      },
-      "cover": null,
-      "icon": {
-        "type": "external",
-        "external": {
-          "url": "https://www.notion.so/icons/notification_blue.svg"
-        }
-      },
-      "parent": {
-        "type": "database_id",
-        "database_id": "eefc9490-e29c-4969-a7a1-fdd99bf743e0"
-      },
-      "archived": false,
-      "properties": {
-        "password": "",
-        "icon": "",
-        "创建时间": "2023-09-02T17:33:00.000Z",
-        "date": "2023-09-03",
-        "type": "Post",
-        "slug": "rollup-multi-input",
-        "配置类型": {
-          "type": "string",
-          "string": "文档"
-        },
-        "summary": "用Rollup打包多入口npm库，实现文件按需引入",
-        "更新时间": "2023-09-05T09:14:00.000Z",
-        "title": "Rollup打包——多入口配置",
-        "category": "技术分享",
-        "tags": [
-          "Rollup",
-          "打包构建"
-        ],
-        "status": "Draft",
-        "urlname": "385c919d-f253-4976-9819-824ea05304e4",
-        "updated": "2023-09-05 09:14:00"
-      },
-      "url": "https://www.notion.so/Rollup-385c919df25349769819824ea05304e4",
-      "public_url": "https://1874.notion.site/Rollup-385c919df25349769819824ea05304e4"
     },
     {
       "object": "page",
