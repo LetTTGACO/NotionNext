@@ -70,12 +70,17 @@ const NotionPage = ({ post, className }) => {
         //     (zoomRef.current).attach(imgList[i])
         //   }
         // }
-
-        // 相册图片禁止跳转页面，改为放大图片功能功能
-        // const cards = document.getElementsByClassName('notion-collection-card')
-        // for (const e of cards) {
-        //   e.removeAttribute('href')
-        // }
+        // NOTE 魔改友情链接页面，点击卡片直接跳转链接
+        if (window.location.pathname === '/links') {
+          const cards = document.getElementsByClassName('notion-collection-card')
+          for (const e of cards) {
+            const form = e.querySelector('form')
+            const action = form.getAttribute('action')
+            // 修改 e 元素的 href 值
+            e.href = action
+            e.target = '_blank'
+          }
+        }
       }
     }, 800)
   }, [])
