@@ -1,15 +1,15 @@
 ---
-password: ""
-icon: ""
-创建时间: "2023-09-02T17:33:00.000Z"
-date: "2023-09-03"
+password: ''
+icon: ''
+创建时间: '2023-09-02T17:33:00.000Z'
+date: '2023-09-03 08:00:00'
 type: Post
 slug: rollup-multi-input
 配置类型:
   type: string
   string: 文档
 summary: 用Rollup打包多入口npm库，实现文件按需引入
-更新时间: "2023-11-22T10:09:00.000Z"
+更新时间: '2024-01-06T12:54:00.000Z'
 title: Rollup打包——多入口配置
 category: 技术分享
 tags:
@@ -17,16 +17,20 @@ tags:
   - 打包构建
 status: Published
 urlname: 385c919d-f253-4976-9819-824ea05304e4
-updated: "2023-11-22 10:09:00"
+updated: '2024-01-06 20:54:00'
 ---
 
 # 适用场景
 
+
 当开发一个组件包时，由于平台的差异，所以在某些实现上需要实现两套。
+
 
 例如，`multi-input`是一个可以同时用于微信小程序和浏览器环境的`npm`库，其中的`request`请求库在不同客户端的实现不一样。在微信环境下用的是`wx.request`，在浏览器环境用的是`fetch`。
 
+
 但是在微信环境使用时，我不希望我引入的代码中包含用不到的适用于浏览器环境的`fetch`等相关代码。再加上微信小程序对于代码体积的严格限制。所以我希望`multi-input`再引入的时候可以有多个入口，主逻辑代码直接引入`multi-input`，`request`库相关逻辑单独有个入口。
+
 
 解决办法有两种
 
@@ -35,19 +39,25 @@ updated: "2023-11-22 10:09:00"
 
 本文介绍第二种方法，使用示例如下：
 
+
 ```javascript
-import { TestCore } from "multi-input"; // 引用的是 dist 文件中的代码
-import { WebRequest } from "multi-input/lib/web-request"; // 引用的是 lib 文件中的代码
-import { WxRequest } from "multi-input/lib/web-request"; // 引用的是 lib 文件中的代码
+import { TestCore } from 'multi-input' // 引用的是 dist 文件中的代码
+import { WebRequest } from 'multi-input/lib/web-request'// 引用的是 lib 文件中的代码
+import { WxRequest } from 'multi-input/lib/wx-request' // 引用的是 lib 文件中的代码
 ```
+
 
 这样在微信小程序端使用并打包时，就不会将`WebRequest`相关代码打包到微信小程序代码中，实现按需引入。
 
+
 # 代码结构
+
 
 ｜ 代码源码：[multi-input](https://github.com/LetTTGACO/build-project/tree/master/rollup/multi-input)
 
+
 `multi-input`库代码结构如下
+
 
 ```text
 .
@@ -68,7 +78,9 @@ import { WxRequest } from "multi-input/lib/web-request"; // 引用的是 lib 文
   |-package.json
 ```
 
+
 # 注意事项
+
 
 要想要外部以这样的方式引用，有几个必要条件：
 
@@ -77,7 +89,8 @@ import { WxRequest } from "multi-input/lib/web-request"; // 引用的是 lib 文
 3. 路径映射：`package.json`中的`exports`字段中需要有`lib/web-request`的路径映射
 4. 多入口打包：`rollup`需要分别打包`src`和`adapter`下的文件
 
-# Rollup 配置
+# Rollup配置
+
 
 功能点如下
 
@@ -131,7 +144,7 @@ export default [
       {
         dir: "lib",
         format: "esm",
-        sourcemap: true,
+        sourcemap: true
       },
     ],
     plugins: [
@@ -145,7 +158,9 @@ export default [
 ];
 ```
 
-# package.json 配置
+
+# package.json配置
+
 
 ```typescript
 {
@@ -188,7 +203,9 @@ export default [
 }
 ```
 
+
 # 打包后代码结构
+
 
 ```typescript
 .
@@ -233,7 +250,8 @@ export default [
   |-tsconfig.json
 ```
 
+
 # 参考资料
 
-- [Rollup 中文文档](https://cn.rollupjs.org/introduction/)
-- [rollup/plugin-typescript 插件配置](https://www.npmjs.com/package/@rollup/plugin-typescript)
+- [Rollup中文文档](https://cn.rollupjs.org/introduction/)
+- [rollup/plugin-typescript插件配置](https://www.npmjs.com/package/@rollup/plugin-typescript)
