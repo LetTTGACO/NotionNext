@@ -37,6 +37,7 @@ jobs:
           COS_SECRET_KEY: ${{ secrets.COS_SECRET_KEY }}
           COS_BUCKET: ${{ secrets.COS_BUCKET }}
           COS_REGION: ${{ secrets.COS_REGION }}
+          COS_HOST: ${{ secrets.COS_HOST }}
         run: |
           pnpm sync
 
