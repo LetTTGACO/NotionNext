@@ -1,15 +1,15 @@
 ---
-password: ""
-icon: ""
-创建时间: "2023-04-07T19:15:00.000Z"
-date: "2022-02-19"
+password: ''
+icon: ''
+创建时间: '2023-04-07T19:15:00.000Z'
+date: '2022-02-19 00:00:00'
 type: Post
 slug: react-commit
 配置类型:
   type: string
   string: 文档
-summary: ""
-更新时间: "2023-08-26T15:26:00.000Z"
+summary: ''
+更新时间: '2023-08-26T15:26:00.000Z'
 title: 第四章 React架构-commit阶段
 category: 学习笔记
 tags:
@@ -17,14 +17,16 @@ tags:
   - React
 status: Draft
 urlname: dcac3fa7-a41d-42ed-837b-79311b3e6e3c
-updated: "2023-08-26 15:26:00"
+updated: '2023-08-26 23:26:00'
 ---
 
 `commitRoot`方法是`commit`阶段工作的起点。`fiberRootNode`会作为传参。
 
+
 ```typescript
 commitRoot(root);
 ```
+
 
 在`rootFiber.firstEffect`上保存了一条需要执行副作用的`Fiber节点`的单向链表`effectList`，这些`Fiber节点`的`updateQueue`中保存了变化的`props`。 这些副作用对应的`DOM`操作在`commit`阶段执行。 除此之外，一些生命周期钩子（比如`componentDidXXX`）、`hook`（比如`useEffect`）需要在`commit`阶段执行。 `commit`阶段的主要工作（即`Renderer`的工作流程）分为三部分：
 
@@ -34,13 +36,18 @@ commitRoot(root);
 
 > 可以从[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactFiberWorkLoop.new.js#L2001)看到 commit 阶段的完整代码。
 
+
 在`before mutation`阶段之前和`layout`阶段之后还有一些额外工作，涉及到比如`useEffect`的触发、优先级相关的重置、`ref`的绑定/解绑。
+
 
 # 流程概述
 
+
 ## before mutation 之前
 
+
 `commitRootImpl`方法中直到第一句`if (firstEffect !== null)`之前属于`before mutation`之前。
+
 
 ```typescript
 do {
@@ -106,9 +113,12 @@ if (finishedWork.effectTag > PerformedWork) {
 }
 ```
 
+
 可以看到，`before mutation`之前主要做一些变量赋值，状态重置的工作。 这一长串代码我们只需要关注最后赋值的`firstEffect`，在`commit`的三个子阶段都会用到他。
 
+
 ## layout 之后
+
 
 ```typescript
 const rootDidHavePassiveEffects = rootDoesHavePassiveEffects;
@@ -156,20 +166,24 @@ flushSyncCallbackQueue();
 return null;
 ```
 
+
 > 你可以在[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactFiberWorkLoop.new.js#L2195)看到这段代码
+
 
 主要包括三点内容：
 
 1. useEffect 相关的处理。
 2. 性能追踪相关。
 
-   > 源码里有很多和 interaction 相关的变量。他们都和追踪 React 渲染时间、性能相关，[Profiler API](https://zh-hans.reactjs.org/docs/profiler.html)和[DevTools](https://github.com/facebook/react-devtools/pull/1069)中使用。可以在这里看到[interaction 的定义](https://gist.github.com/bvaughn/8de925562903afd2e7a12554adcdda16#overview)
+	> 源码里有很多和interaction相关的变量。他们都和追踪React渲染时间、性能相关，[Profiler API](https://zh-hans.reactjs.org/docs/profiler.html)和[DevTools](https://github.com/facebook/react-devtools/pull/1069)中使用。可以在这里看到[interaction的定义](https://gist.github.com/bvaughn/8de925562903afd2e7a12554adcdda16#overview)
 
 3. 在 commit 阶段会触发一些生命周期钩子（如 componentDidXXX）和 hook（如 useLayoutEffect、useEffect）。
 
 在这些回调方法中可能触发新的更新，新的更新会开启新的 render-commit 流程。
 
+
 # before mutation 阶段
+
 
 `Renderer`工作的阶段被称为`commit`阶段。`commit`阶段可以分为三个子阶段：
 
@@ -179,7 +193,9 @@ return null;
 
 `before mutation`阶段的代码很短，整个过程就是遍历`effectList`并调用`commitBeforeMutationEffects`函数处理。
 
+
 > 这部分[源码在这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactFiberWorkLoop.new.js#L2104-L2127)，为了增加可读性，示例代码中删除了不相关的逻辑。
+
 
 ```typescript
 // 保存之前的优先级，以同步优先级执行，执行完毕后恢复之前优先级
@@ -200,7 +216,9 @@ commitBeforeMutationEffects(finishedWork);
 focusedInstanceHandle = null;
 ```
 
+
 ## commitBeforeMutationEffects
+
 
 ```typescript
 function commitBeforeMutationEffects() {
@@ -233,6 +251,7 @@ function commitBeforeMutationEffects() {
 }
 ```
 
+
 整体可以分为三部分：
 
 - 处理`DOM`节点渲染/删除后的 `autoFocus`、`blur` 逻辑。
@@ -241,19 +260,27 @@ function commitBeforeMutationEffects() {
 
 ## 调用`getSnapshotBeforeUpdate`
 
+
 `commitBeforeMutationEffectOnFiber`是`commitBeforeMutationLifeCycles`的别名。 在该方法内会调用`getSnapshotBeforeUpdate`。
+
 
 > 你可以在[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactFiberCommitWork.old.js#L222)看到这段逻辑
 
+
 从`React v16`开始，`componentWillXXX`钩子前增加了`UNSAFE_`前缀。 究其原因，是因为`Stack Reconciler`重构为`Fiber Reconciler`后，`render`阶段的任务可能中断/重新开始，对应的组件在`render`阶段的生命周期钩子（即`componentWillXXX`）可能触发多次。 这种行为和`React v15`不一致，所以标记为`UNSAFE_`。
+
 
 > 更详细的解释参照[这里](https://juejin.im/post/6847902224287285255#comment)
 
+
 为此，`React`提供了替代的生命周期钩子`getSnapshotBeforeUpdate`。 我们可以看见，`getSnapshotBeforeUpdate`是在`commit`阶段内的`before mutation`阶段调用的，由于`commit`阶段是同步的，所以不会遇到多次调用的问题。
+
 
 ## 调度`useEffect`
 
+
 在这几行代码内，`scheduleCallback`方法由`Scheduler`模块提供，用于以某个优先级异步调度一个回调函数。
+
 
 ```typescript
 // 调度useEffect
@@ -269,9 +296,12 @@ if ((effectTag & Passive) !== NoEffect) {
 }
 ```
 
+
 在此处，被异步调度的回调函数就是触发`useEffect`的方法`flushPassiveEffects`。 我们接下来讨论`useEffect`如何被异步调度，以及为什么要异步（而不是同步）调度。
 
+
 ### 如何异步调度
+
 
 在`flushPassiveEffects`方法内部会从全局变量`rootWithPendingPassiveEffects`获取`effectList`。 关于`flushPassiveEffects`的具体讲解参照 useEffect 与 useLayoutEffect 一节 `effectList`中保存了需要执行副作用的`Fiber`节点。其中副作用包括：
 
@@ -281,9 +311,12 @@ if ((effectTag & Passive) !== NoEffect) {
 
 除此外，当一个`FunctionComponent`含有`useEffect`或`useLayoutEffect`，他对应的`Fiber`节点也会被赋值`effectTag`。
 
-> 你可以从[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactHookEffectTags.js)看到 hook 相关的`effectTag`
+
+> 你可以从[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactHookEffectTags.js)看到hook相关的`effectTag`
+
 
 在`flushPassiveEffects`方法内部会遍历`rootWithPendingPassiveEffects`（即`effectList`）执行`effect`回调函数。 如果在此时直接执行，`rootWithPendingPassiveEffects === null`。 `layout`之后的代码片段中会根据`rootDoesHavePassiveEffects === true?`决定是否赋值`rootWithPendingPassiveEffects`。
+
 
 ```typescript
 const rootDidHavePassiveEffects = rootDoesHavePassiveEffects;
@@ -295,6 +328,7 @@ if (rootDoesHavePassiveEffects) {
 }
 ```
 
+
 所以整个`useEffect`异步调用分为三步：
 
 1. `before mutation`阶段在`scheduleCallback`中调度`flushPassiveEffects`
@@ -303,15 +337,21 @@ if (rootDoesHavePassiveEffects) {
 
 ### 为什么需要异步调用
 
+
 摘录自`React`文档[effect 的执行时机](https://zh-hans.reactjs.org/docs/hooks-reference.html#timing-of-effects)：
+
 
 > 与 componentDidMount、componentDidUpdate 不同的是，在浏览器完成布局与绘制之后，传给 useEffect 的函数会延迟调用。这使得它适用于许多常见的副作用场景，比如设置订阅和事件处理等情况，因此不应在函数中执行阻塞浏览器更新屏幕的操作。
 
+
 可见，`useEffect`异步执行的原因主要是防止同步执行时阻塞浏览器渲染。
+
 
 # mutation 阶段
 
+
 类似`before mutation`阶段，`mutation`阶段也是遍历`effectList`，执行函数。这里执行的是`commitMutationEffects`。
+
 
 ```typescript
 nextEffect = firstEffect;
@@ -326,7 +366,9 @@ do {
 } while (nextEffect !== null);
 ```
 
+
 ## commitMutationEffects
+
 
 ```typescript
 function commitMutationEffects(
@@ -408,6 +450,7 @@ function commitMutationEffects(
 }
 ```
 
+
 `commitMutationEffects`会遍历`effectList`，对每个`Fiber`节点执行如下三个操作：
 
 1. 根据`ContentReset effectTag`重置文字节点
@@ -416,7 +459,9 @@ function commitMutationEffects(
 
 ## Placement effect
 
+
 当`Fiber`节点含有`Placement effectTag`，意味着该`Fiber`节点对应的`DOM`节点需要插入到页面中。 调用的方法为`commitPlacement`。
+
 
 ```typescript
 function commitPlacement(finishedWork: Fiber): void {
@@ -474,6 +519,7 @@ function commitPlacement(finishedWork: Fiber): void {
 }
 ```
 
+
 该方法所做的工作分为三步：
 
 1. 获取父级`DOM`节点。其中`finishedWork`为传入的`Fiber`节点。
@@ -501,7 +547,9 @@ if (isContainer) {
 }
 ```
 
+
 值得注意的是，`getHostSibling`（获取兄弟`DOM`节点）的执行很耗时，当在同一个父`Fiber`节点下依次执行多个插入操作，`getHostSibling`算法的复杂度为指数级。 这是由于`Fiber`节点不只包括`HostComponent`，所以`Fiber`树和渲染的`DOM`树节点并不是一一对应的。要从`Fiber`节点找到`DOM`节点很可能跨层级遍历。 考虑如下例子：
+
 
 ```typescript
 function Item() {
@@ -519,7 +567,9 @@ function App() {
 ReactDOM.render(<App/>, document.getElementById('root'));
 ```
 
+
 对应的`Fiber`树和`DOM`树结构为：
+
 
 ```text
 // Fiber树
@@ -530,7 +580,9 @@ rootFiber -----> App -----> div -----> Item -----> li
 #root ---> div ---> li
 ```
 
+
 当在`div`的子节点`Item`前插入一个新节点`p`，即`App`变为：
+
 
 ```typescript
 function App() {
@@ -543,7 +595,9 @@ function App() {
 }
 ```
 
+
 对应的`Fiber`树和`DOM`树结构为：
+
 
 ```text
 // Fiber树
@@ -557,17 +611,23 @@ rootFiber -----> App -----> div -----> p
                ---> li
 ```
 
+
 此时`DOM`节点 `p`的兄弟节点为`li`，而`Fiber`节点 `p`对应的兄弟`DOM`节点为：
+
 
 ```text
 fiberP.sibling.child
 ```
 
+
 即`fiber p`的兄弟`fiber Item`的子`fiber li`
+
 
 ## Update effect
 
+
 当`Fiber`节点含有`Update effectTag`，意味着该`Fiber`节点需要更新。调用的方法为`commitWork`，他会根据`Fiber.tag`分别处理。
+
 
 ```typescript
 function commitWork(current: Fiber | null, finishedWork: Fiber): void {
@@ -646,11 +706,15 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
 }
 ```
 
+
 这里我们主要关注`FunctionComponent`和`HostComponent`。
+
 
 ### FunctionComponent mutation
 
+
 当`fiber.tag`为`FunctionComponent`，会调用`commitHookEffectListUnmount`。该方法会遍历`effectList`，执行所有`useLayoutEffect hook`的销毁函数。
+
 
 ```typescript
 function commitHookEffectListUnmount(tag: number, finishedWork: Fiber) {
@@ -674,9 +738,12 @@ function commitHookEffectListUnmount(tag: number, finishedWork: Fiber) {
 }
 ```
 
+
 ### HostComponent mutation
 
+
 当`fiber.tag`为`HostComponent`，会调用`commitUpdate`。
+
 
 ```typescript
 export function commitUpdate(
@@ -695,7 +762,9 @@ export function commitUpdate(
 }
 ```
 
+
 最终会在`updateProperties`中的`updateDOMProperties`中将`render`阶段 `completeWork`中为`Fiber`节点赋值的`updateQueue`对应的内容渲染在页面上。
+
 
 ```typescript
 function updateDOMProperties(
@@ -725,13 +794,18 @@ function updateDOMProperties(
 }
 ```
 
+
 ## Deletion effect
+
 
 当`Fiber`节点含有`Deletion effectTag`，意味着该`Fiber`节点对应的`DOM`节点需要从页面中删除。调用的方法为`commitDeletion`。
 
-> 你可以在[这里](https://github.com/facebook/react/blob/970fa122d8188bafa600e9b5214833487fbf1092/packages/react-reconciler/src/ReactFiberCommitWork.new.js#L1421)看到 commitDeletion 源码
+
+> 你可以在[这里](https://github.com/facebook/react/blob/970fa122d8188bafa600e9b5214833487fbf1092/packages/react-reconciler/src/ReactFiberCommitWork.new.js#L1421)看到commitDeletion源码
+
 
 这里主要关注`unmountHostComponents`中的`commitNestedUnmounts`中的`commitUnmount`方法
+
 
 ```typescript
 function commitUnmount(
@@ -799,6 +873,7 @@ function commitUnmount(
 }
 ```
 
+
 该方法会执行如下操作：
 
 1. 递归调用`Fiber`节点及其子孙`Fiber`节点中`fiber.tag`为`ClassComponent`的`componentWillUnmount`生命周期钩子，从页面移除`Fiber`节点对应`DOM`节点
@@ -807,7 +882,9 @@ function commitUnmount(
 
 # layout 阶段
 
+
 该阶段之所以称为`layout`，因为该阶段的代码都是在`DOM`渲染完成（`mutation`阶段完成）后执行的。 该阶段触发的生命周期钩子和`hook`可以直接访问到已经改变后的`DOM`，即该阶段是可以参与`DOM layout`的阶段。 与前两个阶段类似，`layout`阶段会遍历`effectList`，依次执行`commitLayoutEffects`。该方法的主要工作为“根据`effectTag`调用不同的处理函数处理`Fiber`并更新`ref`。 具体执行的函数是`commitLayoutEffects`。
+
 
 ```typescript
 // commit阶段完成后，currentFiber就会指向已经渲染好的fiber
@@ -826,7 +903,9 @@ do {
 nextEffect = null;
 ```
 
+
 ## commitLayoutEffects
+
 
 ```typescript
 function commitLayoutEffects(root: FiberRoot, committedLanes: Lanes) {
@@ -849,6 +928,7 @@ function commitLayoutEffects(root: FiberRoot, committedLanes: Lanes) {
 }
 ```
 
+
 `commitLayoutEffects`一共做了两件事：
 
 1. `commitLayoutEffectOnFiber`（调用生命周期钩子和`hook`相关操作）
@@ -856,7 +936,9 @@ function commitLayoutEffects(root: FiberRoot, committedLanes: Lanes) {
 
 ## commitLayoutEffectOnFiber
 
+
 `commitLayoutEffectOnFiber(commitLifeCycles)`方法会根据`fiber.tag`对不同类型的节点分别处理。
+
 
 ```typescript
 function commitLifeCycles(
@@ -1000,49 +1082,65 @@ switch (finishedWork.tag) {
     }
 ```
 
-![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/16d53b50b362380fe4743ff586ed4a99.png)
+
+![FoDDpT2emLK3wR4FbtQ_6VWrT0HH.png](https://image.1874.cool/1874-blog-images/16d53b50b362380fe4743ff586ed4a99.png)
+
 
 由于
+
 
 ```text
 mutation
 ```
 
+
 阶段会执行
+
 
 ```text
 useLayoutEffect hook
 ```
+
 
 的销毁函数。 结合这里我们可以发现，
 
+
 ```text
 useLayoutEffect hook
 ```
 
+
 从上一次更新的销毁函数调用到本次更新的回调函数调用是同步执行的。 而
+
 
 ```text
 useEffect
 ```
 
+
 则需要先调度，在
+
 
 ```text
 Layout
 ```
 
+
 阶段完成后再异步执行。 这就是
+
 
 ```text
 useLayoutEffect
 ```
 
+
 与
+
 
 ```text
 useEffect
 ```
+
 
 的区别。
 
@@ -1050,9 +1148,12 @@ useEffect
 
 触发状态更新的`this.setState`如果赋值了第二个参数回调函数，也会在此时调用。
 
+
 ## commitAttachRef
 
-> commitLayoutEffects 会做的第二件事是 commitAttachRef，获取 DOM 实例，更新 ref。
+
+> commitLayoutEffects会做的第二件事是commitAttachRef，获取DOM实例，更新ref。
+
 
 ```typescript
 function commitAttachRef(finishedWork: Fiber) {
@@ -1082,12 +1183,17 @@ function commitAttachRef(finishedWork: Fiber) {
 }
 ```
 
+
 ## current Fiber 树切换
 
+
 至此，整个 layout 阶段就结束了。 前面也讲过，在 layout 阶段开始之前，有这么一段代码：
+
 
 ```typescript
 root.current = finishedWork;
 ```
 
+
 由于在双缓存机制，`workInProgress Fiber`树在`commit`阶段完成渲染后会变为`current Fiber`树。这行代码的作用就是切换`fiberRootNode`指向的`current Fiber`树。 那么这行代码为什么在这里呢？（在`mutation`阶段结束后，`layout`阶段开始前。） 那是因为`componentWillUnmount`会在`mutation`阶段执行。此时`current Fiber`树还指向前一次更新的`Fiber`树，在生命周期钩子内获取的`DOM`还是更新前的。 而`componentDidMount`和`componentDidUpdate`会在 layout 阶段执行。此时`current Fiber`树需要指向更新后的`Fiber`树，在生命周期钩子内获取的`DOM`就是更新后的。
+

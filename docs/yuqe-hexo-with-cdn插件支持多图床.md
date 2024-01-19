@@ -1,45 +1,56 @@
 ---
-password: ""
-icon: ""
-创建时间: "2023-04-07T19:15:00.000Z"
-date: "2022-02-12"
+password: ''
+icon: ''
+创建时间: '2023-04-07T19:15:00.000Z'
+date: '2022-02-12 00:00:00'
 type: Post
 slug: nvikqw
 配置类型:
   type: string
   string: 文档
 summary: 这是一个支持多个图床的插件，用于在博客中上传图片。目前已适配的图床包括腾讯云、阿里云和七牛云。该插件提供了一个接口适配层，使得上层在使用时可以传入不同的配置参数选择不同的图床。更多详情请查看yuqe-hexo-with-cdn。
-更新时间: "2023-08-26T15:22:00.000Z"
+更新时间: '2023-08-26T15:22:00.000Z'
 title: yuqe-hexo-with-cdn插件支持多图床
 category: 技术分享
 tags:
   - Hexo
 status: Archived
 urlname: c28edc25-f869-45dd-875e-0e7396067ac4
-updated: "2023-08-26 15:22:00"
+updated: '2023-08-26 23:22:00'
 ---
 
 # 引言
 
+
 前段时间写了 [yuque-hexo 插件语雀图片防盗链的解决方案](https://www.yuque.com/1874w/1874.cool/osar7h)。当时使用的是腾讯云图床，后来考虑到可以支持更多的图床选择。这次的改造新增了阿里云图床和七牛云图床。
+
 
 ## 阿里云图床
 
+
 阿里云图床目前各大公司也都在用，技术成熟稳定，但也和腾讯云图床一样，是收费的。但是作为个人博客图床的话，腾讯云 COS 和阿里云 OSS 的费用都相当的便宜，一个月的费用大概都在几分钱到几毛钱的范围。
+
 
 ## 七牛云图床
 
+
 七牛云图床为个人提供 10G 的免费存储空间和完全够用的免费读写流量，用来作为博客图床再合适不过了。缺点就是七牛云图床默认使用 CDN 域名进行外链访问，而且是 30 天的临时域名，所以建议绑定一个备案域名作为永久 CND 域名进行访问。
+
 
 # 改造思路
 
+
 由于各大图床的 API 使用方式不尽相同，所以需要抽离出一个适配层进行接口调用的统一，通过不同的配置获取不同的图床实例进行 API 操作。
 
-![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/625f68144b227b9ff8e4e69c35a54984.jpeg)
+
+![Fhhlf0McPMjB-ly-QqWXkn9W3tG-.jpeg](https://image.1874.cool/1874-blog-images/625f68144b227b9ff8e4e69c35a54984.jpeg)
+
 
 # 具体实现
 
+
 ## 目录结构
+
 
 ```typescript
 |--imageBeds
@@ -50,9 +61,12 @@ updated: "2023-08-26 15:22:00"
 
 ```
 
+
 ## 代码实现
 
+
 ### 接口统一适配层
+
 
 ```javascript
 // imageBeds/index.js
@@ -131,7 +145,9 @@ class ImageBeds {
 module.exports = ImageBeds;
 ```
 
+
 ### 腾讯云图床 API 操作层
+
 
 ```javascript
 // imageBeds/cos.js
@@ -210,7 +226,9 @@ class CosClient {
 module.exports = CosClient;
 ```
 
+
 ### 阿里云图床 API 操作层
+
 
 ```javascript
 // imageBeds/oss.js
@@ -285,7 +303,9 @@ class OssClient {
 module.exports = OssClient;
 ```
 
+
 ### 七牛云图床 API 操作层
+
 
 ```javascript
 // imageBeds/qiniu.js
@@ -395,8 +415,12 @@ class QiniuClient {
 module.exports = QiniuClient;
 ```
 
+
 # 大功告成！
+
 
 使用时，只需要在上层传入 config 配置，获取接口适配层实例，并替换原有的上传图片接口即可。
 
+
 更多源代码详情，请查看[yuqe-hexo-with-cdn](https://github.com/LetTTGACO/yuque-hexo-with-cdn)
+

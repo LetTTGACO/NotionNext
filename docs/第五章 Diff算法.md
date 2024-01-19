@@ -1,15 +1,15 @@
 ---
-password: ""
-icon: ""
-创建时间: "2023-04-07T19:15:00.000Z"
-date: "2022-03-28"
+password: ''
+icon: ''
+创建时间: '2023-04-07T19:15:00.000Z'
+date: '2022-03-28 00:00:00'
 type: Post
 slug: react-diff
 配置类型:
   type: string
   string: 文档
-summary: ""
-更新时间: "2023-08-26T15:26:00.000Z"
+summary: ''
+更新时间: '2023-08-26T15:26:00.000Z'
 title: 第五章 Diff算法
 category: 学习笔记
 tags:
@@ -17,14 +17,17 @@ tags:
   - React
 status: Draft
 urlname: 8c1f610f-80e0-45a6-821f-ba595c26e48a
-updated: "2023-08-26 15:26:00"
+updated: '2023-08-26 23:26:00'
 ---
 
 # 引言
 
+
 对于`update`的组件，`React`会将当前组件与该组件在上次更新时对应的`Fiber`节点比较（也就是俗称的`Diff`算法），将比较的结果生成新`Fiber`节点。
 
-> 你可以从[这里](https://zh-hans.reactjs.org/docs/reconciliation.html#the-diffing-algorithm)看到 Diff 算法的介绍。
+
+> 你可以从[这里](https://zh-hans.reactjs.org/docs/reconciliation.html#the-diffing-algorithm)看到Diff算法的介绍。
+
 
 一个 DOM 节点在某一时刻最多会有 4 个节点和他相关。
 
@@ -35,7 +38,9 @@ updated: "2023-08-26 15:26:00"
 
 `Diff`算法的本质是对比 1 和 4，生成 2。
 
+
 # Diff 的瓶颈以及 React 如何应对
+
 
 由于`Diff`操作本身也会带来性能损耗，`React`文档中提到，即使在最前沿的算法中，将前后两棵树完全比对的算法的复杂程度为 `O(n3)`，其中`n`是树中元素的数量。 如果在`React`中使用了该算法，那么展示`1000`个元素所需要执行的计算量将在十亿的量级范围。这个开销实在是太过高昂。 为了降低算法复杂度，`React`的`diff`会预设三个限制：
 
@@ -57,13 +62,18 @@ updated: "2023-08-26 15:26:00"
 </div>
 ```
 
+
 如果没有`key`，`React`会认为`div`的第一个子节点由`p`变为`h3`，第二个子节点由`h3`变为`p`。这符合限制 2 的设定，会销毁并新建。 但是当我们用`key`指明了节点前后对应关系后，`React`知道`key === "ka"`的`p`在更新后还存在，所以`DOM`节点可以复用，只是需要交换下顺序。 这就是`React`为了应对算法性能瓶颈做出的三条限制。
+
 
 # Diff 是如何实现的
 
+
 从`Diff`的入口函数`reconcileChildFibers`出发，该函数会根据`newChild`（即`JSX`对象）类型调用不同的处理函数。
 
+
 > 你可以从[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactChildFiber.new.js#L1280)看到`reconcileChildFibers`的源码。
+
 
 ```typescript
 // 根据newChild类型选择不同diff函数处理
@@ -101,6 +111,7 @@ function reconcileChildFibers(
 }
 ```
 
+
 可以从同级的节点数量将`Diff`分为两类：
 
 1. 当`newChild`类型为`object`、`number`、`string`，代表同级只有一个节点
@@ -108,9 +119,12 @@ function reconcileChildFibers(
 
 # 单节点 Diff
 
+
 对于单个节点，以类型`object`为例，会进入`reconcileSingleElement`
 
+
 > 你可以从[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactChildFiber.new.js#L1141)看到`reconcileSingleElement`源码
+
 
 ```typescript
 const isObject = typeof newChild === "object" && newChild !== null;
@@ -125,7 +139,9 @@ if (isObject) {
 }
 ```
 
-![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/a69280aca9c173a0c389d08da78e871a.png)
+
+![Fob_llXO4IWuOz8t8LLXpU1vWzZv.png](https://image.1874.cool/1874-blog-images/a69280aca9c173a0c389d08da78e871a.png)
+
 
 ```typescript
 // returnFiber: current fiber的父级fiber
@@ -187,12 +203,14 @@ function reconcileSingleElement(
 }
 ```
 
+
 从代码可以看出，`React`通过先判断`key`是否相同，如果`key`相同则判断`type`是否相同，只有都相同时一个`DOM`节点才能复用。 这里有个细节需要关注下：
 
 - 当`child !== null`且`key`相同且`type`不同时执行`deleteRemainingChildren`将`child`及其兄弟`fiber`都标记删除。
 - 当`child !== null且key`不同时仅将 child 标记删除。
 
 考虑如下例子： 当前页面有 3 个`li`，我们要全部删除，再插入一个`p`。
+
 
 ```text
 // 当前页面显示的
@@ -202,11 +220,15 @@ ul > li * 3
 ul > p
 ```
 
+
 由于本次更新时只有一个`p`，属于单一节点的`Diff`，会走上面介绍的代码逻辑。 在`reconcileSingleElement`中遍历之前的 3 个`fiber`（对应的`DOM`为 3 个`li`），寻找本次更新的`p`是否可以复用之前的 3 个`fiber`中某个的`DOM`。 当`key`相同且`type`不同时，代表我们已经找到本次更新的`p`对应的上次的`fiber`，但是`p`与`li` `type`不同，不能复用。既然唯一的可能性已经不能复用，则剩下的`fiber`都没有机会了，所以都需要标记删除。 当`key`不同时只代表遍历到的该`fiber`不能被`p`复用，后面还有兄弟`fiber`还没有遍历到。所以仅仅标记该 fiber 删除。
+
 
 ## 练习题
 
+
 请判断如下`JSX`对象对应的`DOM`元素是否可以复用：
+
 
 ```html
 // 习题1 更新前
@@ -230,24 +252,32 @@ ul > p
 <div key="xxx">xiao bei</div>
 ```
 
+
 答案： 习题 1: 未设置`key prop`默认 `key = null`，所以更新前后`key`相同，都为`null`，但是更新前`type`为`div`，更新后为`p`，`type`改变则不能复用。 习题 2: 更新前后`key`改变，不需要再判断`type`，不能复用。 习题 3: 更新前后`key`改变，不需要再判断`type`，不能复用。 习题 4: 更新前后`key`与`type`都未改变，可以复用。`children`变化，`DOM`的子元素需要更新。
+
 
 # 多节点 Diff
 
+
 现在考虑我们有一个`FunctionComponent`：
 
+
 ```html
-function List () { return (
-<ul>
-  <li key="0">0</li>
-  <li key="1">1</li>
-  <li key="2">2</li>
-  <li key="3">3</li>
-</ul>
-) }
+function List () {
+  return (
+    <ul>
+      <li key="0">0</li>
+      <li key="1">1</li>
+      <li key="2">2</li>
+      <li key="3">3</li>
+    </ul>
+  )
+}
 ```
 
+
 他的返回值`JSX`对象的`children`属性不是单一节点，而是包含四个对象的数组
+
 
 ```typescript
 {
@@ -266,9 +296,12 @@ function List () { return (
 }
 ```
 
+
 这种情况下，`reconcileChildFibers`的`newChild`参数类型为`Array`，在`reconcileChildFibers`函数内部对应如下情况：
 
+
 > 你可以在[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactChildFiber.new.js#L1352)看到这段源码逻辑
+
 
 ```typescript
 if (isArray(newChild)) {
@@ -277,9 +310,12 @@ if (isArray(newChild)) {
 }
 ```
 
+
 ## 场景归纳
 
+
 ### 场景 1：节点更新
+
 
 ```typescript
 // 之前
@@ -301,7 +337,9 @@ if (isArray(newChild)) {
 </ul>
 ```
 
+
 ### 场景 2：节点新增或减少
+
 
 ```typescript
 // 之前
@@ -323,7 +361,9 @@ if (isArray(newChild)) {
 </ul>
 ```
 
+
 ### 场景 3：节点位置变化
+
 
 ```typescript
 // 之前
@@ -339,9 +379,12 @@ if (isArray(newChild)) {
 </ul>
 ```
 
+
 同级多个节点的`Diff`，一定属于以上三种情况中的一种或多种。
 
+
 ## Diff 的思路
+
 
 该如何设计 Diff 算法呢？一般思路：
 
@@ -352,30 +395,36 @@ if (isArray(newChild)) {
 
 按这个方案，其实有个隐含的前提——**不同操作的优先级是相同的** 但是`React`团队发现，在日常开发中，相较于新增和删除，更新组件发生的频率更高。所以`Diff`会优先判断当前节点是否属于更新。
 
-> 注意 在我们做数组相关的算法题时，经常使用双指针从数组头和尾同时遍历以提高效率，但是这里却不行。 虽然本次更新的 JSX 对象 newChildren 为数组形式，但是和 newChildren 中每个组件进行比较的是 current fiber，同级的 Fiber 节点是由 sibling 指针链接形成的单链表，即不支持双指针遍历。 即 newChildren[0]与 fiber 比较，newChildren[1]与 fiber.sibling 比较。 所以无法使用双指针优化。
+
+> 注意 在我们做数组相关的算法题时，经常使用双指针从数组头和尾同时遍历以提高效率，但是这里却不行。 虽然本次更新的JSX对象 newChildren为数组形式，但是和newChildren中每个组件进行比较的是current fiber，同级的Fiber节点是由sibling指针链接形成的单链表，即不支持双指针遍历。 即 newChildren[0]与fiber比较，newChildren[1]与fiber.sibling比较。 所以无法使用双指针优化。
+
 
 基于以上原因，`Diff`算法的整体逻辑会经历两轮遍历： 第一轮遍历：处理`更新`的节点。 第二轮遍历：处理剩下的`不属于更新`的节点。
 
+
 ## 第一轮遍历
+
 
 第一轮遍历步骤如下：
 
 1. `let i = 0`，遍历`newChildren`，将`newChildren[i]`与`oldFiber`比较，判断`DOM`节点是否可复用。
 2. 如果可复用，`i++`，继续比较`newChildren[i]`与`oldFiber.sibling`，可以复用则继续遍历。
 3. 如果不可复用，分两种情况：
-
 - `key`不同导致不可复用，立即跳出整个遍历，第一轮遍历结束。第一轮遍历只处理节点更新，也就是 key 相同的情况
 - `key`相同 type`不同`导致不可复用，会将`oldFiber`标记为`DELETION`，并继续遍历
-
 1. 如果`newChildren`遍历完（即`i === newChildren.length - 1`）或者`oldFiber`遍历完（即`oldFiber.sibling === null`），跳出遍历，第一轮遍历结束
 
 > 你可以从[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactChildFiber.new.js#L818)看到这轮遍历的源码
 
+
 当遍历结束后，会有两种结果：
+
 
 ### 1.步骤 3 跳出的遍历
 
+
 此时`newChildren`没有遍历完，`oldFiber`也没有遍历完。 举个例子，考虑如下代码：
+
 
 ```html
 // 之前
@@ -389,79 +438,107 @@ if (isArray(newChild)) {
 <li key="1">2</li>
 ```
 
+
 第一个节点可复用，遍历到`key === 2`的节点发现`key`改变，不可复用，跳出遍历，等待第二轮遍历处理。 此时`oldFiber`剩下`key === 1`、`key === 2`未遍历，`newChildren`剩下`key === 2`、`key === 1`未遍历。
+
 
 ### 2.步骤 4 跳出的遍历
 
+
 可能`newChildren`遍历完，或`oldFiber`遍历完，或他们同时遍历完。 举个例子，考虑如下代码：
+
 
 ```html
 // 之前
 <li key="0" className="a">0</li>
 <li key="1" className="b">1</li>
-
+            
 // 之后 情况1 —— newChildren与oldFiber都遍历完
 <li key="0" className="aa">0</li>
 <li key="1" className="bb">1</li>
-
-// 之后 情况2 —— newChildren没遍历完，oldFiber遍历完 // newChildren剩下
-key==="2" 未遍历
+            
+// 之后 情况2 —— newChildren没遍历完，oldFiber遍历完
+// newChildren剩下 key==="2" 未遍历
 <li key="0" className="aa">0</li>
 <li key="1" className="bb">1</li>
 <li key="2" className="cc">2</li>
-
-// 之后 情况3 —— newChildren遍历完，oldFiber没遍历完 // oldFiber剩下 key==="1"
-未遍历
+            
+// 之后 情况3 —— newChildren遍历完，oldFiber没遍历完
+// oldFiber剩下 key==="1" 未遍历
 <li key="0" className="aa">0</li>
 ```
 
+
 带着第一轮遍历的结果，我们开始第二轮遍历。
+
 
 ## 第二轮遍历
 
+
 对于第一轮遍历的结果，我们分别讨论：
+
 
 ### newChildren 与 oldFiber 同时遍历完
 
+
 那就是最理想的情况：只需在第一轮遍历进行组件[更新](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactChildFiber.new.js#L825)。此时 Diff 结束。
+
 
 ### newChildren 没遍历完，oldFiber 遍历完
 
+
 已有的`DOM`节点都复用了，这时还有新加入的节点，意味着本次更新有新节点插入，我们只需要遍历剩下的`newChildren`为生成的`workInProgress fiber`依次标记`Placement`。
+
 
 > 你可以在[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactChildFiber.new.js#L869)看到这段源码逻辑
 
+
 ### newChildren 遍历完，oldFiber 没遍历完
+
 
 意味着本次更新比之前的节点数量少，有节点被删除了。所以需要遍历剩下的`oldFiber`，依次标记`Deletion`。
 
+
 > 你可以在[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactChildFiber.new.js#L863)看到这段源码逻辑
+
 
 ### newChildren 与 oldFiber 遍历完
 
+
 这意味着有节点在这次更新中改变了位置。 这是`Diff`算法最精髓也是最难懂的部分。
+
 
 > 你可以在[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactChildFiber.new.js#L893)看到这段源码逻辑
 
+
 ## 处理移动的节点
 
+
 由于有节点改变了位置，所以不能再用位置索引 i 对比前后的节点，那么如何才能将同一个节点在两次更新中对应上呢？ 我们需要使用`key`。 为了快速的找到`key`对应的`oldFiber`，我们将所有还未处理的`oldFiber`存入以`key`为`key`，`oldFiber`为`value`的`Map`中。
+
 
 ```typescript
 const existingChildren = mapRemainingChildren(returnFiber, oldFiber);
 ```
 
+
 > 你可以在[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactChildFiber.new.js#L890)看到这段源码逻辑
+
 
 接下来遍历剩余的`newChildren`，通过`newChildren[i].key`就能在`existingChildren`中找到`key`相同的`oldFiber`。
 
+
 ## 标记节点是否移动
+
 
 既然我们的目标是寻找移动的节点，那么我们需要明确：节点是否移动是以什么为参照物？ 我们的参照物是：最后一个可复用的节点在`oldFiber`中的位置索引（用变量`lastPlacedIndex`表示）。 由于本次更新中节点是按`newChildren`的顺序排列。在遍历`newChildren`过程中，每个遍历到的可复用节点一定是当前遍历到的所有可复用节点中最靠右的那个，即一定在`lastPlacedIndex`对应的可复用的节点在本次更新中位置的后面。 那么我们只需要比较遍历到的可复用节点在上次更新时是否也在`lastPlacedIndex`对应的`oldFiber`后面，就能知道两次更新中这两个节点的相对位置改变没有。 我们用变量`oldIndex`表示遍历到的可复用节点在`oldFiber`中的位置索引。如果`oldIndex < lastPlacedIndex`，代表本次更新该节点需要向右移动。 `lastPlacedIndex`初始为`0`，每遍历一个可复用的节点，如果`oldIndex >= lastPlacedIndex`，则`lastPlacedIndex = oldIndex`。 这里有两个 Demo，可以对照着理解。
 
+
 ### Demo1
 
+
 在`Demo`中我们简化下书写，每个字母代表一个节点，字母的值代表节点的`key`
+
 
 ```typescript
 
@@ -533,7 +610,9 @@ oldIndex 1 < lastPlacedIndex 3 // 之前节点为 abcd，所以b.index === 1
 最终acd 3个节点都没有移动，b节点被标记为移动
 ```
 
+
 ### Demo2
+
 
 ```text
 // 之前
@@ -605,4 +684,6 @@ oldIndex 2 < lastPlacedIndex 3
 ===第二轮遍历结束===
 ```
 
+
 可以看到，我们以为从 `abcd` 变为 `dabc`，只需要将`d`移动到前面。 但实际上`React`保持`d`不变，将`abc`分别移动到了`d`的后面。 从这点可以看出，考虑性能，我们要尽量减少将节点从后面移动到前面的操作。
+

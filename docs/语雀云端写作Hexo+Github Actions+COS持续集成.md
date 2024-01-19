@@ -2,7 +2,7 @@
 password: ''
 icon: ''
 创建时间: '2023-04-07T19:15:00.000Z'
-date: '2022-01-19 08:00:00'
+date: '2022-01-19 00:00:00'
 type: Post
 slug: roeayv
 配置类型:
@@ -65,7 +65,7 @@ updated: '2023-08-26 23:22:00'
 # 部署流程
 
 
-![FvjX9uckFsBD3DDgkfoo-IZ3b8yJ.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/3cb06aef46a3297949388b2ed38c195e.png)
+![FvjX9uckFsBD3DDgkfoo-IZ3b8yJ.png](https://image.1874.cool/1874-blog-images/3cb06aef46a3297949388b2ed38c195e.png)
 
 
 > PS：在Github Actions 持续集成 Docker 构建并部署 Node 项目到云服务器中，我已经将调用云函数改为调我自己的 node 项目了，再由 node 服务调用 github actions
@@ -106,19 +106,19 @@ npm i yuque-hexo
 
 1. 访问[工作台](https://www.yuque.com/dashboard)=>账户设置=Token=>新建 token 并配置好权限。**Access Token 即为 YUQUE_TOKEN**
 
-![FiMisZ8z0CXkE_JhM4M3HYtVKH8Z.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/cfd8b88a1fd46b857633a64c13b61e09.png)
+![FiMisZ8z0CXkE_JhM4M3HYtVKH8Z.png](https://image.1874.cool/1874-blog-images/cfd8b88a1fd46b857633a64c13b61e09.png)
 
 1. 访问[工作台](https://www.yuque.com/dashboard)=>账户设置=>账户设置=>个人路径，设置语雀的简易的个人路径（建议），**拿到个人路径。**
 
-![FqEnqU_PHRB_3vaMUYJP2hjyTXfN.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/a7b65320154318445c79ad5b42d81445.png)
+![FqEnqU_PHRB_3vaMUYJP2hjyTXfN.png](https://image.1874.cool/1874-blog-images/a7b65320154318445c79ad5b42d81445.png)
 
 1. 新建一个放置博客的知识库（可见范围为互联网可见）
 2. 进入博客知识库，设置博客知识库的路径（建议），**拿到知识库的路径**。
 
-![FmlvxdkN3QSn1fj3FDrQr6tDfi5r.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/5511977a39d9cc8713c33c48027c95ae.png)
+![FmlvxdkN3QSn1fj3FDrQr6tDfi5r.png](https://image.1874.cool/1874-blog-images/5511977a39d9cc8713c33c48027c95ae.png)
 
 
-![Fm5RGoda0mSPPczTrWRFxT4L16DS.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/08ef98d2dacf146a7f8388a1acc03713.png)
+![Fm5RGoda0mSPPczTrWRFxT4L16DS.png](https://image.1874.cool/1874-blog-images/08ef98d2dacf146a7f8388a1acc03713.png)
 
 
 ## 配置 hexo
@@ -171,7 +171,7 @@ npm i yuque-hexo
 访问 [腾讯云对象存储控制台](https://console.cloud.tencent.com/cos/bucket)=>基础配置=>静态网站， **开启静态网站功能。**
 
 
-![FikwiN4n7oezapO3LJA6XYK6dZOQ.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/56ac7ee447cff62b85190fe20d691713.png)
+![FikwiN4n7oezapO3LJA6XYK6dZOQ.png](https://image.1874.cool/1874-blog-images/56ac7ee447cff62b85190fe20d691713.png)
 
 
 ## 配置自定义 CDN 加速域名
@@ -180,7 +180,7 @@ npm i yuque-hexo
 访问 [腾讯云对象存储控制台](https://console.cloud.tencent.com/cos/bucket)=>域名与传输管理=>自定义 CDN 加速域名，**配置自定义加速域名**
 
 
-![Fl2amqnJo65UKTDg7ozmsg5amAeH.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/a2431def2874cda8a9aabeff00a28b7e.png)
+![Fl2amqnJo65UKTDg7ozmsg5amAeH.png](https://image.1874.cool/1874-blog-images/a2431def2874cda8a9aabeff00a28b7e.png)
 
 
 ## 解析域名
@@ -189,7 +189,7 @@ npm i yuque-hexo
 访问[我的域名管理](https://console.cloud.tencent.com/cns)=>添加域名解析记录=>让域名指向上面的 CNAM 域名
 
 
-![FiZKKLW8VFjLpUY4DPvvCdh-kePL.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/3729ad019e2cbb05dac46daa2c5211c2.png)
+![FiZKKLW8VFjLpUY4DPvvCdh-kePL.png](https://image.1874.cool/1874-blog-images/3729ad019e2cbb05dac46daa2c5211c2.png)
 
 
 ## 获取配置参数
@@ -215,7 +215,7 @@ npm i yuque-hexo
 > 这里建议可以新增子用户，并设置权限，获取子用户的密钥，这里不作赘述。
 
 
-![FhvBmhn85j6XZG2H1SeRFFfH4v21.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/f4a6988b43b52f23ce5e971286900426.png)
+![FhvBmhn85j6XZG2H1SeRFFfH4v21.png](https://image.1874.cool/1874-blog-images/f4a6988b43b52f23ce5e971286900426.png)
 
 
 ### 获取 bucket 和 region
@@ -227,7 +227,7 @@ npm i yuque-hexo
 ### 
 
 
-![FlY6trvKTOwRUZBKjO1N5Zs8K6N1.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/579750b112ac5eb7b2ce6f6654c95188.png)
+![FlY6trvKTOwRUZBKjO1N5Zs8K6N1.png](https://image.1874.cool/1874-blog-images/579750b112ac5eb7b2ce6f6654c95188.png)
 
 
 # 配置 Github Actions
@@ -257,7 +257,7 @@ npm i yuque-hexo
 > 注意下：这个 Token 只会出现一次，最好复制出来使用，如果忘记了，只能重新生成一个
 
 
-![FussD8LZRmLdE4Bf7syjdq7j1Sps.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/6f2bbd1b8052f6d243696cdc825f04ae.png)
+![FussD8LZRmLdE4Bf7syjdq7j1Sps.png](https://image.1874.cool/1874-blog-images/6f2bbd1b8052f6d243696cdc825f04ae.png)
 
 
 > Github Token 用途：
@@ -271,7 +271,7 @@ npm i yuque-hexo
 进入博客仓库的设置，配置 `secrets`。把之前获取的腾讯云的`SECRET_ID` 和 `SECRET_KEY`和语雀的`YUQUE_TOKEN`配置到这里。
 
 
-![Fj3i2PVipW8AfTyzzJ8bW_voyFtR.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/4823a0f718f6d3c0124e952e8dbf3b48.png)
+![Fj3i2PVipW8AfTyzzJ8bW_voyFtR.png](https://image.1874.cool/1874-blog-images/4823a0f718f6d3c0124e952e8dbf3b48.png)
 
 
 > SECRET_ID、SECRET_KEY、BUCKET、REGION 用于上传静态网站文件到 COS YUQUE_TOKEN 用于拉取语雀的文章 GITHUB_TOKEN 不用配置，可以在 Github Actions 中直接获取
@@ -407,11 +407,11 @@ def main_handler(event, context):
 
 1. 触发期配置=>自定义创建=>配置如下图所示
 
-![Fv6EtiOMRj1v9_23wK-di7YAsKfT.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/2bfc0a24dc9ea3d9e25b173be7d11099.png)
+![Fv6EtiOMRj1v9_23wK-di7YAsKfT.png](https://image.1874.cool/1874-blog-images/2bfc0a24dc9ea3d9e25b173be7d11099.png)
 
 1. 部署完成后进入触发管理，最下面就是云函数地址
 
-![FkhVJCWmBWFVsqWAW3uVCw5vVuDq.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/189a22841e80f5c4022a7f7d39ab4dfa.png)
+![FkhVJCWmBWFVsqWAW3uVCw5vVuDq.png](https://image.1874.cool/1874-blog-images/189a22841e80f5c4022a7f7d39ab4dfa.png)
 
 
 # 配置语雀 webhook
@@ -420,7 +420,7 @@ def main_handler(event, context):
 访问博客知识库=>设置=>消息推送，选择其他渠道，设置机器人名称和上文获取到的云函数地址，选择触发条件
 
 
-![Fr_bBB8LiuuO4bZ-xPbS1rpXD1ir.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/bfbd501c8c869b3b936522e9b73365f4.png)
+![Fr_bBB8LiuuO4bZ-xPbS1rpXD1ir.png](https://image.1874.cool/1874-blog-images/bfbd501c8c869b3b936522e9b73365f4.png)
 
 
 > 发布文档和更新文档，需要选择文档有较大更新，推送给关注者，才会触发 webhook。 但是经过我的测试，一旦某一篇文章选择文档有较大更新，推送给关注者。后续的更新，不管选没选文档有较大更新，推送给关注者，都会触发 webhook。如果因为部署频繁导致出错的话，建议选择评审阶段触发。也可以每次通过测试按钮手动触发。
@@ -432,7 +432,7 @@ def main_handler(event, context):
 无论是发布新文章还是更新删除等等操作，只要选择文档有较大更新，推送给关注者即可自动触发。
 
 
-![Fg0QmVZZQc9nRAGKw9fdIzw4uMsH.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/ce82beee45ee7aa4584d2b7023d9b588.png)
+![Fg0QmVZZQc9nRAGKw9fdIzw4uMsH.png](https://image.1874.cool/1874-blog-images/ce82beee45ee7aa4584d2b7023d9b588.png)
 
 
 # 常见问题
@@ -445,7 +445,7 @@ def main_handler(event, context):
 
 1. 在语雀上使用图片的时候，避开直接复制图片到语雀。先将图片上传到自己的图床后，直接使用 markdown 的图片语法：`![](https://xxxx.com/a.jpg)`插入图片到适当位置，例如：
 
-![FioacWCiuPFjNteg-vR3cLc1WLxS.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/42fd8e5e9ac69dcc69c64612d1989028.png)
+![FioacWCiuPFjNteg-vR3cLc1WLxS.png](https://image.1874.cool/1874-blog-images/42fd8e5e9ac69dcc69c64612d1989028.png)
 
 1. 为了不破坏语雀编辑器的体验，我修改了 yuque-hexo 的源代码，发布了[yuqe-hexo-with-cdn](https://github.com/LetTTGACO/yuque-hexo-with-cdn)插件。适配了将语雀中的图片上传到腾讯云 COS 图床后，将原有的语雀图片链接替换掉。
 

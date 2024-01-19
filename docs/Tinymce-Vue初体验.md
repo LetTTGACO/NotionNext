@@ -1,15 +1,15 @@
 ---
-password: ""
-icon: ""
-创建时间: "2023-04-07T19:15:00.000Z"
-date: "2021-01-15"
+password: ''
+icon: ''
+创建时间: '2023-04-07T19:15:00.000Z'
+date: '2021-01-15 00:00:00'
 type: Post
 slug: sbgn9r
 配置类型:
   type: string
   string: 文档
-summary: ""
-更新时间: "2023-08-26T14:48:00.000Z"
+summary: ''
+更新时间: '2023-08-26T14:48:00.000Z'
 title: Tinymce-Vue初体验
 category: 学习笔记
 tags:
@@ -17,54 +17,66 @@ tags:
   - Vue
 status: Archived
 urlname: b3c87db0-ebc5-4eb3-9529-2ea17e5d4bc8
-updated: "2023-08-26 14:48:00"
+updated: '2023-08-26 22:48:00'
 ---
 
 # 引言
 
+
 最近有需求需要用到富文本编辑器，而且需要将上传/粘贴的图片上传到阿里云 OSS 上。在简单体验了几个富文本编辑器之后，决定选用 Tinymce。 Tinymce-Vue 里面的坑还是挺多的，花了两天时间终于把一些简单的坑填上了，基本上算是满足了需求。这里来简单讲一下在项目中使用 `Tinymce-Vue` 的经过。
 
+
 # Tinymce-Vue 插件安装
+
 
 ```text
 npm install @tinymce/tinymce-vue -D
 npm install tinymce -D
 ```
 
+
 安装成功之后，在`node_modules`目录中，找到`tinymce`中的`skins`目录，将其拷贝到`static`或者`public`目录下。为了结构清晰，我外层包了`tinymce`目录。
 
-> 踩坑 ①：用不同版本的 vue-cli 创建出来的项目，默认静态公共资源的目录是不一样的。vue-cli2 的默认静态公共资源目录为 static，但是 vue-cli3 默认为 public。拷贝的时候根据自己项目的配置注意下
+
+> 踩坑 ①：用不同版本的vue-cli创建出来的项目，默认静态公共资源的目录是不一样的。vue-cli2的默认静态公共资源目录为static，但是vue-cli3默认为public。拷贝的时候根据自己项目的配置注意下
+
 
 由于`tinymce`默认是英文界面，如果需要下载[中文的语言包](https://www.tiny.cloud/get-tiny/language-packages/)，可以去官网下载。下载之后将其放在`public/tinymce/`下。同样的，为了结构清晰，我将其放在了`langs`目录下。
 
-![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/10f143f442b9ea87df6a7fd826e6c14c.png)
+
+![FpED8KkqnzMbNRqZOs9ZVhyaxrnB.png](https://image.1874.cool/1874-blog-images/10f143f442b9ea87df6a7fd826e6c14c.png)
+
 
 # 起步
 
+
 在组件中初始化`Tinymce.vue`组件，并引入需要用到的依赖。
+
 
 ```javascript
 // 引入基本文件
-import tinymce from "tinymce/tinymce";
-import Editor from "@tinymce/tinymce-vue";
+import tinymce from 'tinymce/tinymce'
+import Editor from '@tinymce/tinymce-vue'
 // 引入主题文件
-import "tinymce/themes/silver";
+import 'tinymce/themes/silver'
 // 引入你需要的插件
-import "tinymce/plugins/paste"; //粘贴插件，很强大，配置后可以粘贴图片
-import "tinymce/plugins/image"; //上传图片的插件
-import "tinymce/plugins/table"; //表格
-import "tinymce/plugins/wordcount";
+import 'tinymce/plugins/paste' //粘贴插件，很强大，配置后可以粘贴图片
+import 'tinymce/plugins/image' //上传图片的插件
+import 'tinymce/plugins/table' //表格
+import 'tinymce/plugins/wordcount'
 ```
+
 
 由于`Editor-vue`也是官方封装的组件，所以需要注册组件使用。
 
+
 ```javascript
-components: {
-  Editor;
-}
+components: {  Editor;}
 ```
 
+
 使用组件，代码如下：
+
 
 ```javascript
 <template>
@@ -263,6 +275,9 @@ export default {
 </style>
 ```
 
-> 坑 ②：当使用`keep-alive`时，富文本会出现`key`重复的问题
 
-    坑③：微信截图完直接粘贴图片后`blobInfo.blob()`生成一个不能被`OSS`识别的`File`对象，需要`File`文件对象 ==》 `ArrayBuffer`流 ==》 `Buffer`流 才能被`OSS`识别
+> 坑②：当使用`keep-alive`时，富文本会出现`key`重复的问题
+
+
+	坑③：微信截图完直接粘贴图片后`blobInfo.blob()`生成一个不能被`OSS`识别的`File`对象，需要`File`文件对象 ==》 `ArrayBuffer`流 ==》 `Buffer`流 才能被`OSS`识别
+

@@ -1,27 +1,29 @@
 ---
-password: ""
-icon: ""
-创建时间: "2023-04-07T19:15:00.000Z"
-date: "2020-04-15"
+password: ''
+icon: ''
+创建时间: '2023-04-07T19:15:00.000Z'
+date: '2020-04-15 00:00:00'
 type: Post
 slug: ymxk6u
 配置类型:
   type: string
   string: 文档
-summary: ""
-更新时间: "2023-08-26T15:24:00.000Z"
+summary: ''
+更新时间: '2023-08-26T15:24:00.000Z'
 title: 阿里canal数据库命令总结
 category: 学习笔记
 tags:
   - Java
 status: Archived
 urlname: d9d157b7-9c7f-4375-8d60-d4b58d51882a
-updated: "2023-08-26 15:24:00"
+updated: '2023-08-26 23:24:00'
 ---
 
 查看端口：netstat -ntulp
 
+
 # canal
+
 
 ```text
 路径：/root/canal
@@ -34,7 +36,9 @@ nstance日志：tail -100f logs/example/example.log
 端口：119.27.172.40:11111
 ```
 
+
 # zookeeper
+
 
 ```text
 路径：/usr/local/zookeeper
@@ -48,7 +52,9 @@ nstance日志：tail -100f logs/example/example.log
 端口：119.27.172.40:2181
 ```
 
+
 # zkui
+
 
 ```text
 路径：/root/zkui
@@ -59,7 +65,9 @@ nstance日志：tail -100f logs/example/example.log
 端口：119.27.172.40:9090
 ```
 
+
 # kafka
+
 
 ```text
 路径：/usr/local/kafka/kafka_2.11-1.1.1
@@ -71,3 +79,4 @@ nstance日志：tail -100f logs/example/example.log
 bin/kafka-console-consumer.sh --bootstrap-server 119.27.172.40:9092  --from-beginning --topic example_t
 端口：119.27.172.40:9092
 ```
+

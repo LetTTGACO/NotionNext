@@ -2,7 +2,7 @@
 password: ''
 icon: ''
 创建时间: '2023-09-02T17:33:00.000Z'
-date: '2023-09-03 08:00:00'
+date: '2023-09-03 00:00:00'
 type: Post
 slug: rollup-multi-input
 配置类型:

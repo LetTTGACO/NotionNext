@@ -1,37 +1,44 @@
 ---
-password: ""
-icon: ""
-创建时间: "2023-04-07T19:15:00.000Z"
-date: "2019-04-02"
+password: ''
+icon: ''
+创建时间: '2023-04-07T19:15:00.000Z'
+date: '2019-04-02 00:00:00'
 type: Post
 slug: qykfat
 配置类型:
   type: string
   string: 文档
 summary: 这篇文章介绍了如何使用 SpringBoot、ActiveMQ 和腾讯云 SMS 搭建 Java 短信微服务，并提供了详细的步骤和代码示例。
-更新时间: "2023-08-26T14:43:00.000Z"
+更新时间: '2023-08-26T14:43:00.000Z'
 title: Java短信微服务开发 SpringBoot+ActiveMQ+腾讯云SMS
 category: 技术分享
 tags:
   - Java
 status: Archived
 urlname: af91247d-4fac-406b-8272-9a807defeefd
-updated: "2023-08-26 14:43:00"
+updated: '2023-08-26 22:43:00'
 ---
 
 # 引言
 
+
 在 2018 年学习 Java 的 WEB 开发时，就慢慢变得上瘾起来，不太愿意用视频中给的静态网页来做项目。自己便用不太熟练的 JS 写了个注册网页，然后还用上了邮箱验证码，很喜欢这个网页。但是后来的项目一直用不上，直到最近做一个网站，刚好可以用到之前做的注册网页。就把它用更高级的 Angular JS 改造了一下，并改成了手机短信验证码，感觉更有成就感了！ 此次开发的短信微服务是利用 SpringBoot 快速搭建 ActiveMQ，因为我的云服务器和域名都在腾讯云，而且腾讯云短信每个月送 100 条短信，对我日常开发测试而言，根本用不完，所以使用腾讯云短信 API 完成发送短信，里面有好多技术都是第一次接触，所以写一下记录下细节。
+
 
 # 项目架构
 
-![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/da78077740f7d9ef55f93d731d9678e6.png)
+
+![FuN9hIJs_P9C-Ybf_nfv6rgLcLFA.png](https://image.1874.cool/1874-blog-images/da78077740f7d9ef55f93d731d9678e6.png)
+
 
 # 利用 SpringBoot 搭建 ActiveMQ
 
+
 ## 创建 Maven 工程 letttgaco_sms_service（注意：打包方式为 jar）
 
+
 添加如下依赖至 pom.xml
+
 
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -76,9 +83,12 @@ updated: "2023-08-26 14:43:00"
 </project>
 ```
 
+
 ## 创建引导类 Application.java
 
+
 这个类是程序的入口，启动它就能启动 SpringBoot 容器
+
 
 ```java
 package cn.letttgaco.sms;
@@ -98,9 +108,12 @@ public class Application {
 }
 ```
 
+
 ## 使用腾讯云 SMS 需要准备的信息
 
+
 在腾讯云开通短信服务，申请好短信签名和短信模板后，可以将相关配置储存到配置文件 application.properties（直接在 resources 中创建）中。[点击前往腾讯云短信官方文档](https://cloud.tencent.com/document/product/382/18071)
+
 
 ```java
 // 短信应用SDK AppID
@@ -118,7 +131,9 @@ public class Application {
     String smsSign = "腾讯云"; // NOTE: 签名参数使用的是`签名内容`，而不是`签名ID`。这里的签名"腾讯云"只是一个示例，真实的签名需要在短信控制台申请。
 ```
 
+
 ## 创建腾讯云 SMS 工具类 SmsUtil.java
+
 
 ```java
 package cn.letttgaco.sms;
@@ -139,7 +154,7 @@ public class SmsUtil {
 	//用来读取springboot的配置文件中的内容
 	@Autowired
 	private Environment env;
-
+    
 	/**
 	 * 我只在配置文件中存储了appid和appkey,其他信息我选择从上层传过来
 	 * @param map
@@ -178,9 +193,12 @@ public class SmsUtil {
 }
 ```
 
+
 ## 创建消息的消费者 SmsListener.java
 
+
 利用 SpringBoot 甚至不用配置 ActiveMQ 的 xml 文件！！！！
+
 
 ```java
 package cn.letttgaco.sms;
@@ -197,7 +215,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SmsListener {
-
+	
 	@Autowired
 	private SmsUtil smsUtil;
 	//destination="sendSms"指消费端会监听名称为sendSms的队列
@@ -209,7 +227,9 @@ public class SmsListener {
 }
 ```
 
+
 ## 创建消息的生产者
+
 
 ```java
 package cn.letttgaco.user.service.impl;
@@ -229,16 +249,16 @@ import com.alibaba.dubbo.config.annotation.Service;
  */
 @RestController
 public class UserServiceImpl implements UserService {
-
+	
     @Autowired
 	private JmsMessagingTemplate jmsMessagingTemplate;
-
+    
 	@Value("${templateId}")
 	private String templateId;
-
+	
 	@Value("${smsSign}")
 	private String smsSign;
-
+	
 	@RequestMapping("/sendSms")
 	public void sendSms(String phone) {
 		//将短信内容发送给ActiveMQ
@@ -247,25 +267,32 @@ public class UserServiceImpl implements UserService {
 		map.put("templateId", templateId);//签名模板
 		map.put("smsSign", smsSign);//签名内容
 		jmsMessagingTemplate.convertAndSend("sendSms",phone);
-
+		
 	}
-
+	
 }
 ```
 
+
 # 测试
 
+
 > 注：可以在 application.properties 设置内置 tomcat 的访问端口号，默认为 8080。
+
 
 ```xml
 server.port=9080
 ```
 
+
 ## 启动 Application.java
 
-![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/c17f754e7ff2fde75784a8af71b9e0ae.png)
+
+![Fog02flc86lD33GHFiEu9v_zJOA3.png](https://image.1874.cool/1874-blog-images/c17f754e7ff2fde75784a8af71b9e0ae.png)
+
 
 ## 打开浏览器
+
 
 输入`http://localhost:9080/sendSms?phone=13333333333` 消息产生过程：
 
@@ -275,4 +302,6 @@ server.port=9080
 
 ---
 
+
 至此，短信微服务搭建成功！
+

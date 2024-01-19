@@ -2,7 +2,7 @@
 password: ''
 icon: ''
 创建时间: '2023-04-07T19:15:00.000Z'
-date: '2022-01-20 08:00:00'
+date: '2022-01-20 00:00:00'
 type: Post
 slug: osar7h
 配置类型:
@@ -36,7 +36,7 @@ Elog使用文档：[https://elog.1874.cool](https://elog.1874.cool/)
 
 1. 在语雀上使用图片的时候，避开直接复制图片到语雀。先将图片上传到自己的图床后，直接使用`markdown`的图片语法：`![](https://xxxx.com/a.jpg)`插入图片到适当位置，例如：
 
-![FioacWCiuPFjNteg-vR3cLc1WLxS.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/42fd8e5e9ac69dcc69c64612d1989028.png)
+![FioacWCiuPFjNteg-vR3cLc1WLxS.png](https://image.1874.cool/1874-blog-images/42fd8e5e9ac69dcc69c64612d1989028.png)
 
 1. 为了不破坏语雀编辑器的体验，我修改了`yuque-hexo`的源代码，发布了`yuqe-hexo-with-cdn`插件。适配了将语雀中的图片上传到腾讯云 COS 图床后，将原有的语雀图片链接替换掉。
 
@@ -55,10 +55,10 @@ Elog使用文档：[https://elog.1874.cool](https://elog.1874.cool/)
 ### 原 yuque-hexo 生成.md 文章简易流程
 
 
-![Fmw6JzWt77eNl8bZEjm9DfXkUzvi.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/e6c59f934fc87c95ba64d0b36eb6f672.png)
+![Fmw6JzWt77eNl8bZEjm9DfXkUzvi.png](https://image.1874.cool/1874-blog-images/e6c59f934fc87c95ba64d0b36eb6f672.png)
 
 
-![FvbBK8CcTjuw-otaGM04maJnn5bL.jpeg](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/a44a57d7ea9c758bbc7811a07bf8b9a0.jpeg)
+![FvbBK8CcTjuw-otaGM04maJnn5bL.jpeg](https://image.1874.cool/1874-blog-images/a44a57d7ea9c758bbc7811a07bf8b9a0.jpeg)
 
 
 ### yuqe-hexo-with-cdn 改造思路
@@ -67,19 +67,19 @@ Elog使用文档：[https://elog.1874.cool](https://elog.1874.cool/)
 整体思路主要是在生成`yuque.json`之前进行语雀图片的替换
 
 
-![FkKB938kloJ_Q8sFG9mMSGIU1x5s.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/5c552afe4a4c9ba3f2a68be4af1964a5.png)
+![FkKB938kloJ_Q8sFG9mMSGIU1x5s.png](https://image.1874.cool/1874-blog-images/5c552afe4a4c9ba3f2a68be4af1964a5.png)
 
 
-![FrYOy2OlY8r1quTwMxbUF3ditE-E.jpeg](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/995529319a86d7cc140f307575b24c85.jpeg)
+![FrYOy2OlY8r1quTwMxbUF3ditE-E.jpeg](https://image.1874.cool/1874-blog-images/995529319a86d7cc140f307575b24c85.jpeg)
 
 
 具体实现流程
 
 
-![FucxIXLK1tooOCX012sNpAtppMRc.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/ce437ae89137204ee9982390251c25a1.png)
+![FucxIXLK1tooOCX012sNpAtppMRc.png](https://image.1874.cool/1874-blog-images/ce437ae89137204ee9982390251c25a1.png)
 
 
-![Fuji-vgBnpY7Yg3Tev-jZ-DbnDDP.jpeg](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/645fc1e5e1dd7cdd37a2d2b25fd0c9ad.jpeg)
+![Fuji-vgBnpY7Yg3Tev-jZ-DbnDDP.jpeg](https://image.1874.cool/1874-blog-images/645fc1e5e1dd7cdd37a2d2b25fd0c9ad.jpeg)
 
 
 ## 具体实现
@@ -169,7 +169,7 @@ async function img2Cos(article) {
   // 6. 将语雀图片链接进行替换
   urlList.forEach(function(url) {
     if (url) {
-      article.body = article.body.replace(url.originalUrl, `![](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/4a379d55dc2394e92fa8944b3bb35126.url})`);
+      article.body = article.body.replace(url.originalUrl, `![](https://image.1874.cool/1874-blog-images/4a379d55dc2394e92fa8944b3bb35126.url})`);
       out.info(`replace ${url.yuqueRealImgUrl} to ${url.url}`);
     }
   });
@@ -295,7 +295,7 @@ async function uploadImg(imgBuffer, fileName) {
 语雀的流程图/文本绘图等无法生成 markdown 展示，所以我的做法是，在语雀编辑器书写的时候，先编写流程图，写好了再截图，作为图片放在流程图的前面。这样生成的 md 文件就只有图片被解析出来了。
 
 
-![FkL8pPinDyxnak397bwQVlM57eeL.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/7ea4e9236756e29954235e222b5aa926.png)
+![FkL8pPinDyxnak397bwQVlM57eeL.png](https://image.1874.cool/1874-blog-images/7ea4e9236756e29954235e222b5aa926.png)
 
 
 ## 特殊情况下需要使用 markdown 语法的图片链接示例
@@ -304,16 +304,16 @@ async function uploadImg(imgBuffer, fileName) {
 因为该插件会将匹配到的所有 markdown 语法的图片都上传到图床（包括代码块中的示例），所以在书写语雀文章时，非特殊情况不要使用该语法。或者在书写的时候，将链接非法化即可，例如：
 
 
-![FkPytQbCfcYdtboEpkB4tiGh3iDz.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/18c7d7272ddf198da33571273ee79d90.png)
+![FkPytQbCfcYdtboEpkB4tiGh3iDz.png](https://image.1874.cool/1874-blog-images/18c7d7272ddf198da33571273ee79d90.png)
 
 
-![FnGGls9yxHv_YyeqhxKl6Z_BLOI8.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/4c42ca079c01f6855ca09fae4d3bd3d5.png)
+![FnGGls9yxHv_YyeqhxKl6Z_BLOI8.png](https://image.1874.cool/1874-blog-images/4c42ca079c01f6855ca09fae4d3bd3d5.png)
 
 
 插件在处理的过程中会检测出来非法链接，就不会上传该图片了
 
 
-![FolAZNE4CANdcXxPIH2mjlBbzrjG.png](https://blogimagesrep-1257180516.cos.ap-guangzhou.myqcloud.com/1874-blog-images/0e86292f5c8c58ff5fd77a036ed9fe0a.png)
+![FolAZNE4CANdcXxPIH2mjlBbzrjG.png](https://image.1874.cool/1874-blog-images/0e86292f5c8c58ff5fd77a036ed9fe0a.png)
 
 
 # 关于
