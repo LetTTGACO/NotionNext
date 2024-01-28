@@ -1732,29 +1732,29 @@
     {
       "id": "f6e531b3-0283-4a4f-b2f5-7724a602f1cc",
       "doc_id": "f6e531b3-0283-4a4f-b2f5-7724a602f1cc",
-      "updated": 1706452980000,
+      "updated": 1706453820000,
       "properties": {
         "password": "",
         "icon": "",
         "创建时间": "2024-01-28T11:49:00.000Z",
         "date": "2024-01-28 08:00:00",
         "type": "Post",
-        "slug": "frp-on-mac",
+        "slug": "frp",
         "配置类型": {
           "type": "string",
           "string": "文档"
         },
         "summary": "",
-        "更新时间": "2024-01-28T14:43:00.000Z",
-        "title": "在Mac上自建FRP内网穿透",
+        "更新时间": "2024-01-28T14:57:00.000Z",
+        "title": "自建FRP内网穿透",
         "category": "技术分享",
         "tags": [],
         "status": "Published",
         "urlname": "f6e531b3-0283-4a4f-b2f5-7724a602f1cc",
-        "updated": "2024-01-28 22:43:00"
+        "updated": "2024-01-28 22:57:00"
       },
-      "realName": "在Mac上自建FRP内网穿透",
-      "relativePath": "/在Mac上自建FRP内网穿透.md",
+      "realName": "自建FRP内网穿透",
+      "relativePath": "/自建FRP内网穿透.md",
       "docPath": "./docs"
     }
   ],
@@ -1763,7 +1763,7 @@
       "object": "page",
       "id": "f6e531b3-0283-4a4f-b2f5-7724a602f1cc",
       "created_time": "2024-01-28T11:49:00.000Z",
-      "last_edited_time": "2024-01-28T14:43:00.000Z",
+      "last_edited_time": "2024-01-28T14:57:00.000Z",
       "created_by": {
         "object": "user",
         "id": "b82f6c4e-be35-49b9-b539-7f72b6e7e246"
@@ -1790,22 +1790,22 @@
         "创建时间": "2024-01-28T11:49:00.000Z",
         "date": "2024-01-28 08:00:00",
         "type": "Post",
-        "slug": "frp-on-mac",
+        "slug": "frp",
         "配置类型": {
           "type": "string",
           "string": "文档"
         },
         "summary": "",
-        "更新时间": "2024-01-28T14:43:00.000Z",
-        "title": "在Mac上自建FRP内网穿透",
+        "更新时间": "2024-01-28T14:57:00.000Z",
+        "title": "自建FRP内网穿透",
         "category": "技术分享",
         "tags": [],
         "status": "Published",
         "urlname": "f6e531b3-0283-4a4f-b2f5-7724a602f1cc",
-        "updated": "2024-01-28 22:43:00"
+        "updated": "2024-01-28 22:57:00"
       },
-      "url": "https://www.notion.so/Mac-FRP-f6e531b302834a4fb2f57724a602f1cc",
-      "public_url": "https://1874.notion.site/Mac-FRP-f6e531b302834a4fb2f57724a602f1cc"
+      "url": "https://www.notion.so/FRP-f6e531b302834a4fb2f57724a602f1cc",
+      "public_url": "https://1874.notion.site/FRP-f6e531b302834a4fb2f57724a602f1cc"
     },
     {
       "object": "page",
